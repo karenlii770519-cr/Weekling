@@ -7,26 +7,29 @@
 <meta name="description" content="不用社交，只是剛好在附近。讓孩子週末變得更豐富">
 <meta property="og:title" content="孩子的友情你來經紀">
 <meta property="og:description" content="不用社交，只是剛好在附近。讓孩子週末變得更豐富">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --green: #06C755;
     --green-2: #04a847;
-    --green-light: #edfaf3;
-    --green-mist: #f0faf5;
-    --peach: #FF7A5C;
-    --peach-light: #fff2ee;
-    --yellow: #FFBE3D;
-    --yellow-light: #fffbef;
-    --sky: #5BC4BF;
-    --sky-light: #eef9f8;
-    --lilac: #A78BCC;
-    --lilac-light: #f5f0fc;
+    --green-light: #e6faf0;
+    --green-mist: #edfaf5;
+    --orange: #E17D00;
+    --orange-light: #fff3e0;
+    --yellow: #FAC800;
+    --yellow-light: #fffbe6;
+    --sky: #32E1C8;
+    --sky-light: #e6fdf9;
+    --lilac: #32E1C8;
+    --lilac-light: #e6fdf9;
+    --peach: #E17D00;
+    --peach-light: #fff3e0;
     --bg: #F7F6F3;
-    --bg-warm: #faf8f5;
+    --bg-warm: #faf9f6;
     --card: #FFFFFF;
     --text: #1E1E1E;
-    --text-2: #555;
+    --text-2: #444;
     --text-sub: #999;
     --border: #EBEBEB;
     --border-2: #E0DDD8;
@@ -147,12 +150,11 @@
     font-weight: 500;
     letter-spacing: 0.3px;
   }
-  .nav-item.active { color: var(--green); }
-  .nav-item span { font-size: 21px; }
-  .nav-item.active span {
-    filter: drop-shadow(0 2px 4px rgba(6,199,85,0.3));
+  .nav-item i { font-size: 22px; display: block; margin-bottom: 2px; transition: all 0.2s; }
+  .nav-item.active { color: #32E1C8; }
+  .nav-item.active i {
+    filter: drop-shadow(0 2px 4px rgba(50,225,200,0.35));
     transform: translateY(-1px);
-    display: inline-block;
   }
 
   /* ── SCROLL CONTENT ── */
@@ -210,9 +212,9 @@
     appearance: none;
   }
   .form-input:focus, .form-select:focus, .form-textarea:focus {
-    border-color: var(--green);
+    border-color: #32E1C8;
     background: #fff;
-    box-shadow: 0 0 0 3px rgba(6,199,85,0.1);
+    box-shadow: 0 0 0 3px rgba(50,225,200,0.12);
   }
   .form-textarea { resize: none; height: 100px; line-height: 1.7; }
 
@@ -233,16 +235,16 @@
   }
   .tag-chip:active { transform: scale(0.95); }
   .tag-chip.selected {
-    border-color: var(--green);
-    background: var(--green-light);
-    color: var(--green-2);
-    box-shadow: 0 2px 8px rgba(6,199,85,0.15);
+    border-color: #32E1C8;
+    background: #e6fafa;
+    color: #1a9e8e;
+    box-shadow: 0 2px 8px rgba(50,225,200,0.18);
   }
   .tag-chip.selected-peach {
-    border-color: var(--peach);
-    background: var(--peach-light);
-    color: #d4502a;
-    box-shadow: 0 2px 8px rgba(255,122,92,0.15);
+    border-color: #FAC800;
+    background: #fffbe6;
+    color: #8a6e00;
+    box-shadow: 0 2px 8px rgba(250,200,0,0.2);
   }
 
   /* ── BUTTONS ── */
@@ -281,9 +283,9 @@
   }
   .btn-secondary:active { transform: scale(0.97); }
   .btn-peach {
-    background: linear-gradient(135deg, var(--peach) 0%, #FF9F7A 100%);
-    color: #fff;
-    box-shadow: 0 4px 16px rgba(255,122,92,0.3);
+    background: linear-gradient(135deg, #FAC800 0%, #FFC200 100%);
+    color: #1E1E1E;
+    box-shadow: 0 4px 16px rgba(250,200,0,0.35);
   }
   .btn-peach:active { transform: scale(0.97); }
   .btn-sm {
@@ -302,7 +304,7 @@
   .section-label {
     font-size: 11px;
     font-weight: 700;
-    color: var(--text-sub);
+    color: #32E1C8;
     text-transform: uppercase;
     letter-spacing: 1.2px;
     margin-bottom: 8px;
@@ -319,11 +321,11 @@
     font-weight: 600;
     letter-spacing: 0.1px;
   }
-  .badge-green { background: var(--green-light); color: var(--green-2); }
-  .badge-peach { background: var(--peach-light); color: #c0502a; }
-  .badge-yellow { background: var(--yellow-light); color: #9a6800; }
-  .badge-blue { background: var(--sky-light); color: #2a8a85; }
-  .badge-purple { background: var(--lilac-light); color: #6b3fa0; }
+  .badge-green { background: #e6fafa; color: #1a9e8e; }
+  .badge-peach { background: #fffbe6; color: #8a6e00; }
+  .badge-yellow { background: #fffbe6; color: #8a6e00; }
+  .badge-blue { background: #e6fafa; color: #1a9e8e; }
+  .badge-purple { background: #e6fafa; color: #1a9e8e; }
 
   /* ── DIVIDER ── */
   .divider { height: 1px; background: var(--border); margin: 14px 0; }
@@ -459,7 +461,7 @@
      PAGE: HOME
   ════════════════════════════════ */
   .home-header {
-    background: linear-gradient(135deg, #06C755 0%, #0BD96B 50%, #2EE87F 100%);
+    background: linear-gradient(135deg, #32E1C8 0%, #00E5E8 50%, #7FF0F2 100%);
     padding: 22px 20px 56px;
     color: #fff;
     position: relative;
@@ -513,7 +515,8 @@
     text-align: left;
   }
   .quick-card:active { transform: scale(0.95); box-shadow: var(--shadow-xs); }
-  .quick-card-icon { font-size: 30px; margin-bottom: 9px; }
+  .quick-card-icon { font-size: 30px; margin-bottom: 9px; line-height:1; }
+  .quick-card-icon i { font-size: 28px; }
   .quick-card-title {
     font-family: var(--font-display);
     font-weight: 700;
@@ -546,7 +549,7 @@
     transition: background 0.4s ease;
   }
   .progress-step.done {
-    background: linear-gradient(90deg, var(--green), #2ECC71);
+    background: linear-gradient(90deg, #32E1C8, #7FF0F2);
   }
 
   /* ════════════════════════════════
@@ -564,9 +567,9 @@
     background: var(--bg-warm);
   }
   .venue-option.selected {
-    border-color: var(--green);
-    background: var(--green-mist);
-    box-shadow: 0 2px 12px rgba(6,199,85,0.12);
+    border-color: #32E1C8;
+    background: #e6fafa;
+    box-shadow: 0 2px 12px rgba(50,225,200,0.15);
   }
   .venue-icon {
     width: 42px; height: 42px;
@@ -605,13 +608,13 @@
     font-family: var(--font-body);
   }
   .timeslot-btn.selected {
-    border-color: var(--green);
-    background: var(--green-mist);
-    box-shadow: 0 2px 10px rgba(6,199,85,0.12);
+    border-color: #32E1C8;
+    background: #e6fafa;
+    box-shadow: 0 2px 10px rgba(50,225,200,0.15);
   }
   .timeslot-day { font-size: 11px; color: var(--text-sub); font-weight: 600; letter-spacing: 0.3px; }
   .timeslot-time { font-size: 13px; font-weight: 700; margin-top: 3px; color: var(--text); }
-  .timeslot-btn.selected .timeslot-time { color: var(--green-2); }
+  .timeslot-btn.selected .timeslot-time { color: #1a9e8e; }
 
   /* ════════════════════════════════
      PAGE: RESULTS
@@ -631,11 +634,11 @@
     position: absolute;
     top: 0; left: 0;
     width: 4px; height: 100%;
-    background: linear-gradient(180deg, var(--green), #2ECC71);
+    background: linear-gradient(180deg, #32E1C8, #7FE8EB);
     border-radius: 4px 0 0 4px;
   }
   .match-card.blue::before {
-    background: linear-gradient(180deg, var(--sky), #7FD8D4);
+    background: linear-gradient(180deg, #FAC800, #FFE566);
   }
   .match-header { display: flex; align-items: flex-start; gap: 13px; margin-bottom: 13px; }
   .match-name {
@@ -734,7 +737,7 @@
      PAGE: MY PAGE
   ════════════════════════════════ */
   .profile-hero {
-    background: linear-gradient(135deg, var(--lilac-light), var(--sky-light));
+    background: linear-gradient(135deg, #e6fafa, #fffbe6);
     border-radius: var(--radius);
     padding: 22px;
     display: flex;
@@ -802,22 +805,7 @@
     box-shadow: var(--shadow-xs);
   }
 
-  /* ── NAV ICONS ── */
-  .nav-icon {
-    width: 24px; height: 24px;
-    object-fit: contain;
-    opacity: 0.45;
-    transition: all 0.2s;
-    display: block;
-    margin: 0 auto 3px;
-    /* 備用：圖片載入前不會空白 */
-    min-height: 24px;
-  }
-  .nav-item.active .nav-icon,
-  .active-icon {
-    opacity: 1;
-    filter: drop-shadow(0 2px 4px rgba(6,199,85,0.35));
-  }
+
 
   /* ── CSS 虹彩泡泡 ── */
   .bubble {
@@ -924,7 +912,7 @@
   <!-- ════ REGISTER ════ -->
   <div class="page" id="page-register">
     <div class="topbar">
-      <button class="back-btn" onclick="goTo('page-splash')">←</button>
+      <button class="back-btn" onclick="goTo('page-splash')"><i class="bi bi-arrow-left"></i></button>
       <span class="topbar-title">建立資料</span>
     </div>
     <div class="progress-bar">
@@ -938,13 +926,13 @@
       <div id="reg-step1" style="display:block;padding:22px 20px 40px">
         <div style="margin-bottom:20px;margin-top:4px">
           <div class="section-label">步驟 1 / 3</div>
-          <div style="font-family:'Nunito',sans-serif;font-size:20px;font-weight:900">小孩的基本資料</div>
+          <div style="font-family:'Nunito',sans-serif;font-size:20px;font-weight:900"><i class="bi bi-person-fill" style="color:var(--green);margin-right:6px"></i>小孩的基本資料</div>
         </div>
         <div class="form-group">
           <label class="form-label">家長暱稱<span>*</span> <span style="font-size:11px;color:var(--green);font-weight:600">從 LINE 自動帶入</span></label>
           <div style="position:relative">
             <input class="form-input" id="reg-nickname" value="小明媽媽" style="padding-right:70px" />
-            <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text-sub);cursor:pointer" onclick="document.getElementById('reg-nickname').focus()">✏️ 修改</span>
+            <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text-sub);cursor:pointer" onclick="document.getElementById('reg-nickname').focus()"><i class="bi bi-pencil-fill" style="font-size:11px"></i> 修改</span>
           </div>
           <div style="font-size:11px;color:var(--text-sub);margin-top:4px">可修改為其他暱稱，不影響你的 LINE 名稱</div>
         </div>
@@ -963,11 +951,8 @@
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div class="form-group">
-            <label class="form-label">年齡<span>*</span></label>
-            <select class="form-select">
-              <option>1歲</option><option>2歲</option><option selected>3歲</option>
-              <option>4歲</option><option>5歲</option><option>6歲</option>
-            </select>
+            <label class="form-label">小孩生日<span>*</span></label>
+            <input class="form-input" type="date" id="reg-birthday" />
           </div>
           <div class="form-group">
             <label class="form-label">性別</label>
@@ -981,21 +966,36 @@
           <input class="form-input" placeholder="輔助驗證用，不公開" />
         </div>
         <div class="form-group">
-          <label class="form-label">健保卡末4碼</label>
-          <input class="form-input" placeholder="輔助驗證用，不公開" maxlength="4" />
+          <label class="form-label">小孩生肖<span>*</span></label>
+          <select class="form-select" id="reg-zodiac">
+            <option value="">請選擇</option>
+            <option>鼠</option>
+            <option>牛</option>
+            <option>虎</option>
+            <option>兔</option>
+            <option>龍</option>
+            <option>蛇</option>
+            <option>馬</option>
+            <option>羊</option>
+            <option>猴</option>
+            <option>雞</option>
+            <option>狗</option>
+            <option>豬</option>
+          </select>
+          <div style="font-size:11px;color:var(--text-sub);margin-top:4px">用於輔助驗證身份，不公開</div>
         </div>
-        <button class="btn btn-primary" onclick="regNext(2)">下一步</button>
+        <button class="btn btn-primary" onclick="regNext(2)">下一步 <i class="bi bi-arrow-right"></i></button>
       </div>
 
       <!-- Step 2: 個性標籤 -->
       <div id="reg-step2" style="display:none;padding:22px 20px 40px;min-height:100vh;box-sizing:border-box">
         <div style="margin-bottom:20px;margin-top:4px">
           <div class="section-label">步驟 2 / 3</div>
-          <div style="font-family:'Nunito',sans-serif;font-size:20px;font-weight:900">小孩的個性與喜好</div>
+          <div style="font-family:'Nunito',sans-serif;font-size:20px;font-weight:900"><i class="bi bi-stars" style="color:var(--yellow);margin-right:6px"></i>小孩的個性與喜好</div>
           <div style="font-size:13px;color:var(--text-sub);margin-top:6px">可以複選，幫助我們找到合拍的玩伴</div>
         </div>
         <div class="card">
-          <div class="card-title">😊 個性（可複選）</div>
+          <div class="card-title"><i class="bi bi-emoji-smile" style="color:var(--green)"></i> 個性（可複選）</div>
           <div class="tag-group" id="tags-personality">
             <div class="tag-chip" onclick="toggleTag(this)">活潑外向</div>
             <div class="tag-chip" onclick="toggleTag(this)">文靜內斂</div>
@@ -1011,7 +1011,7 @@
           </div>
         </div>
         <div class="card">
-          <div class="card-title">🎮 喜歡的活動（可複選）</div>
+          <div class="card-title"><i class="bi bi-controller" style="color:var(--peach)"></i> 喜歡的活動（可複選）</div>
           <div class="tag-group" id="tags-liked">
             <div class="tag-chip" onclick="toggleTagPeach(this)">跑跳追逐</div>
             <div class="tag-chip" onclick="toggleTagPeach(this)">積木／樂高</div>
@@ -1027,7 +1027,7 @@
         </div>
         <div style="display:flex;gap:10px">
           <button class="btn btn-secondary" style="flex:1" onclick="regNext(1)">上一步</button>
-          <button class="btn btn-primary" style="flex:2" onclick="regNext(3)">下一步</button>
+          <button class="btn btn-primary" style="flex:2" onclick="regNext(3)">下一步 <i class="bi bi-arrow-right"></i></button>
         </div>
       </div>
 
@@ -1035,14 +1035,14 @@
       <div id="reg-step3" style="display:none;padding:22px 20px 40px;min-height:100vh;box-sizing:border-box">
         <div style="margin-bottom:20px;margin-top:4px">
           <div class="section-label">步驟 3 / 3</div>
-          <div style="font-family:'Nunito',sans-serif;font-size:20px;font-weight:900">自我介紹與可約時段</div>
+          <div style="font-family:'Nunito',sans-serif;font-size:20px;font-weight:900"><i class="bi bi-chat-heart-fill" style="color:var(--peach);margin-right:6px"></i>自我介紹與可約時段</div>
         </div>
         <div class="form-group">
           <label class="form-label">家長自介或期許</label>
           <textarea class="form-textarea" placeholder="跟其他家長說說你的期待吧！例如：希望小孩有固定玩伴，我自己也希望認識同齡家長，不用每次找話題，一起帶小孩玩就好。（最多200字）"></textarea>
         </div>
         <div class="card">
-          <div class="card-title">📅 可約時段（可複選）</div>
+          <div class="card-title"><i class="bi bi-calendar-week" style="color:var(--sky)"></i> 可約時段（可複選）</div>
           <div class="timeslot-grid">
             <div class="timeslot-btn" onclick="toggleSlot(this)">
               <div class="timeslot-day">週六</div>
@@ -1064,7 +1064,7 @@
         </div>
         <div style="display:flex;gap:10px">
           <button class="btn btn-secondary" style="flex:1" onclick="regNext(2)">上一步</button>
-          <button class="btn btn-primary" style="flex:2" onclick="goTo('page-home')">完成註冊 🎉</button>
+          <button class="btn btn-primary" style="flex:2" onclick="goTo('page-home')">完成註冊 <i class="bi bi-check-circle-fill"></i></button>
         </div>
       </div>
 
@@ -1076,7 +1076,7 @@
     <div class="home-header">
       <div class="home-header-row">
         <div>
-          <div class="home-greeting">嗨，<span id="home-name">小明媽媽</span> 👋</div>
+          <div class="home-greeting">嗨，<span id="home-name">小明媽媽</span> <i class="bi bi-hand-wave"></i></div>
           <div class="home-sub">小明，3歲・林口區</div>
         </div>
         <img class="line-avatar" id="home-avatar" src="https://i.pravatar.cc/96?img=47" alt="頭像" />
@@ -1095,22 +1095,22 @@
       <!-- 快捷功能 -->
       <div class="quick-actions">
         <button class="quick-card" onclick="goTo('page-find')">
-          <div class="quick-card-icon">🔍</div>
+          <div class="quick-card-icon"><i class="bi bi-search"></i></div>
           <div class="quick-card-title">尋找玩伴</div>
           <div class="quick-card-sub">找符合的家庭</div>
         </button>
         <button class="quick-card" onclick="goTo('page-history')">
-          <div class="quick-card-icon">📋</div>
+          <div class="quick-card-icon"><i class="bi bi-clipboard-check"></i></div>
           <div class="quick-card-title">配對紀錄</div>
           <div class="quick-card-sub">查看過去紀錄</div>
         </button>
         <button class="quick-card" onclick="goTo('page-venue-request')">
-          <div class="quick-card-icon">📍</div>
+          <div class="quick-card-icon"><i class="bi bi-geo-alt-fill"></i></div>
           <div class="quick-card-title">推薦場所</div>
           <div class="quick-card-sub">分享好地點</div>
         </button>
         <button class="quick-card" onclick="goTo('page-mypage')">
-          <div class="quick-card-icon">👤</div>
+          <div class="quick-card-icon"><i class="bi bi-person-circle"></i></div>
           <div class="quick-card-title">我的資料</div>
           <div class="quick-card-sub">編輯個人資料</div>
         </button>
@@ -1118,10 +1118,10 @@
 
       <!-- 本週場所推薦 -->
       <div class="card">
-        <div class="card-title">🌟 熱門場所</div>
+        <div class="card-title"><i class="bi bi-star-fill" style="color:var(--yellow)"></i> 熱門場所</div>
         <div style="display:flex;flex-direction:column;gap:10px">
           <div style="display:flex;align-items:center;gap:12px">
-            <div style="font-size:28px">🏬</div>
+            <div style="font-size:28px"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
             <div>
               <div style="font-weight:700;font-size:13px">三井 LaLaport 林口</div>
               <div style="font-size:11px;color:var(--text-sub)">室內・0-12歲・本週 3 組配對</div>
@@ -1129,7 +1129,7 @@
           </div>
           <div class="divider" style="margin:4px 0"></div>
           <div style="display:flex;align-items:center;gap:12px">
-            <div style="font-size:28px">🎭</div>
+            <div style="font-size:28px"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
             <div>
               <div style="font-weight:700;font-size:13px">卡多磨兒童職人村</div>
               <div style="font-size:11px;color:var(--text-sub)">室內遊樂・2-8歲・本週 2 組配對</div>
@@ -1139,22 +1139,10 @@
       </div>
     </div>
     <nav class="bottom-nav">
-      <button class="nav-item active" onclick="goTo('page-home')">
-        <img src="images/icon-home.png" class="nav-icon active-icon" alt="首頁" />
-        首頁
-      </button>
-      <button class="nav-item" onclick="goTo('page-find')">
-        <img src="images/icon-find.png" class="nav-icon" alt="尋找" />
-        尋找
-      </button>
-      <button class="nav-item" onclick="goTo('page-history')">
-        <img src="images/icon-history.png" class="nav-icon" alt="紀錄" />
-        紀錄
-      </button>
-      <button class="nav-item" onclick="goTo('page-mypage')">
-        <img src="images/icon-me.png" class="nav-icon" alt="我的" />
-        我的
-      </button>
+      <button class="nav-item active" onclick="goTo('page-home')"><i class="bi bi-house-fill"></i>首頁</button>
+      <button class="nav-item" onclick="goTo('page-find')"><i class="bi bi-search-heart"></i>尋找</button>
+      <button class="nav-item" onclick="goTo('page-history')"><i class="bi bi-clock"></i>紀錄</button>
+      <button class="nav-item" onclick="goTo('page-mypage')"><i class="bi bi-person"></i>我的</button>
     </nav>
   </div>
 
@@ -1166,45 +1154,45 @@
     </div>
     <div class="scroll-content">
       <div class="card">
-        <div class="card-title">📍 選擇場所</div>
+        <div class="card-title"><i class="bi bi-geo-alt-fill" style="color:var(--peach)"></i> 選擇場所</div>
         <div id="venue-list">
           <div class="venue-option" onclick="selectVenue(this)">
-            <div class="venue-icon">🏬</div>
+            <div class="venue-icon"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
             <div>
               <div class="venue-name">三井 LaLaport 林口</div>
               <div class="venue-desc">購物中心・室內・全年齡</div>
             </div>
-            <div class="venue-check">✓</div>
+            <div class="venue-check"><i class="bi bi-check-circle-fill"></i></div>
           </div>
           <div class="venue-option" onclick="selectVenue(this)">
-            <div class="venue-icon">🌳</div>
+            <div class="venue-icon"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
             <div>
               <div class="venue-name">林口運動公園</div>
               <div class="venue-desc">戶外公園・免費・2-6歲</div>
             </div>
-            <div class="venue-check">✓</div>
+            <div class="venue-check"><i class="bi bi-check-circle-fill"></i></div>
           </div>
           <div class="venue-option" onclick="selectVenue(this)">
-            <div class="venue-icon">🎭</div>
+            <div class="venue-icon"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
             <div>
               <div class="venue-name">卡多磨兒童職人村</div>
               <div class="venue-desc">室內遊樂・2-8歲</div>
             </div>
-            <div class="venue-check">✓</div>
+            <div class="venue-check"><i class="bi bi-check-circle-fill"></i></div>
           </div>
           <div class="venue-option" onclick="selectVenue(this)">
-            <div class="venue-icon">📚</div>
+            <div class="venue-icon"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
             <div>
               <div class="venue-name">林口區立圖書館</div>
               <div class="venue-desc">圖書館・安靜・0-6歲</div>
             </div>
-            <div class="venue-check">✓</div>
+            <div class="venue-check"><i class="bi bi-check-circle-fill"></i></div>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title">📅 選擇時段（可複選）</div>
+        <div class="card-title"><i class="bi bi-calendar-week" style="color:var(--sky)"></i> 選擇時段（可複選）</div>
         <div class="timeslot-grid">
           <div class="timeslot-btn" onclick="toggleSlot(this)">
             <div class="timeslot-day">週六</div>
@@ -1225,13 +1213,13 @@
         </div>
       </div>
 
-      <button class="btn btn-primary" onclick="goTo('page-results')">🔍 開始配對</button>
+      <button class="btn btn-primary" onclick="goTo('page-results')"><i class="bi bi-search"></i> 開始配對</button>
     </div>
     <nav class="bottom-nav">
-        <button class="nav-item" onclick="goTo('page-home')"><img src="images/icon-home.png" class="nav-icon" alt="首頁"/>首頁</button>
-      <button class="nav-item active" onclick="goTo('page-find')"><img src="images/icon-find.png" class="nav-icon active-icon" alt="尋找"/>尋找</button>
-      <button class="nav-item" onclick="goTo('page-history')"><img src="images/icon-history.png" class="nav-icon" alt="紀錄"/>紀錄</button>
-      <button class="nav-item" onclick="goTo('page-mypage')"><img src="images/icon-me.png" class="nav-icon" alt="我的"/>我的</button>
+        <button class="nav-item" onclick="goTo('page-home')"><i class="bi bi-house"></i>首頁</button>
+      <button class="nav-item active" onclick="goTo('page-find')"><i class="bi bi-search-heart-fill"></i>尋找</button>
+      <button class="nav-item" onclick="goTo('page-history')"><i class="bi bi-clock"></i>紀錄</button>
+      <button class="nav-item" onclick="goTo('page-mypage')"><i class="bi bi-person"></i>我的</button>
     </nav>
   </div>
 
@@ -1261,17 +1249,17 @@
           <span class="badge badge-green">動靜皆宜</span>
         </div>
         <div class="match-info-row">
-          <span class="badge badge-peach">🎨 畫畫／手作</span>
-          <span class="badge badge-peach">📖 看繪本</span>
-          <span class="badge badge-peach">🎭 角色扮演</span>
+          <span class="badge badge-peach"><i class="bi bi-brush-fill"></i> 畫畫／手作</span>
+          <span class="badge badge-peach"><i class="bi bi-book-fill"></i> 看繪本</span>
+          <span class="badge badge-peach"><i class="bi bi-masks-theater"></i> 角色扮演</span>
         </div>
         <div class="match-intro">
-          💬「小花比較慢熱，希望找個有耐心的玩伴家庭，大人也可以一起喝個咖啡聊聊。」
+          <i class="bi bi-chat-quote-fill" style="color:var(--sky)"></i>「小花比較慢熱，希望找個有耐心的玩伴家庭，大人也可以一起喝個咖啡聊聊。」
         </div>
         <div style="font-size:12px;color:var(--text-sub);margin-bottom:12px">
-          📍 共同場所：三井 LaLaport ｜ 🕙 週六下午、週日下午
+          <i class="bi bi-geo-alt-fill" style="color:var(--peach)"></i> 共同場所：三井 LaLaport ｜ <i class="bi bi-clock" style="color:var(--text-sub)"></i> 週六下午、週日下午
         </div>
-        <button class="btn btn-primary" onclick="goTo('page-confirm')">邀請約玩 👋</button>
+        <button class="btn btn-primary" onclick="goTo('page-confirm')"><i class="bi bi-send-fill"></i> 邀請約玩</button>
       </div>
 
       <!-- 配對結果 2 -->
@@ -1288,24 +1276,24 @@
           <span class="badge badge-yellow">精力充沛</span>
         </div>
         <div class="match-info-row">
-          <span class="badge badge-peach">🏃 跑跳追逐</span>
-          <span class="badge badge-peach">⚽ 球類運動</span>
-          <span class="badge badge-peach">🌳 戶外探索</span>
+          <span class="badge badge-peach"><i class="bi bi-lightning-fill"></i> 跑跳追逐</span>
+          <span class="badge badge-peach"><i class="bi bi-dribbble"></i> 球類運動</span>
+          <span class="badge badge-peach"><i class="bi bi-tree-fill"></i> 戶外探索</span>
         </div>
         <div class="match-intro">
-          💬「帶小虎出門就是要讓他跑！歡迎同樣精力旺盛的小孩一起玩。」
+          <i class="bi bi-chat-quote-fill" style="color:var(--sky)"></i>「帶小虎出門就是要讓他跑！歡迎同樣精力旺盛的小孩一起玩。」
         </div>
         <div style="font-size:12px;color:var(--text-sub);margin-bottom:12px">
-          📍 共同場所：林口運動公園 ｜ 🕙 週日下午
+          <i class="bi bi-geo-alt-fill" style="color:var(--peach)"></i> 共同場所：林口運動公園 ｜ <i class="bi bi-clock" style="color:var(--text-sub)"></i> 週日下午
         </div>
-        <button class="btn btn-primary" onclick="goTo('page-confirm')">邀請約玩 👋</button>
+        <button class="btn btn-primary" onclick="goTo('page-confirm')"><i class="bi bi-send-fill"></i> 邀請約玩</button>
       </div>
     </div>
     <nav class="bottom-nav">
-        <button class="nav-item" onclick="goTo('page-home')"><img src="images/icon-home.png" class="nav-icon" alt="首頁"/>首頁</button>
-      <button class="nav-item active" onclick="goTo('page-find')"><img src="images/icon-find.png" class="nav-icon active-icon" alt="尋找"/>尋找</button>
-      <button class="nav-item" onclick="goTo('page-history')"><img src="images/icon-history.png" class="nav-icon" alt="紀錄"/>紀錄</button>
-      <button class="nav-item" onclick="goTo('page-mypage')"><img src="images/icon-me.png" class="nav-icon" alt="我的"/>我的</button>
+        <button class="nav-item" onclick="goTo('page-home')"><i class="bi bi-house"></i>首頁</button>
+      <button class="nav-item active" onclick="goTo('page-find')"><i class="bi bi-search-heart-fill"></i>尋找</button>
+      <button class="nav-item" onclick="goTo('page-history')"><i class="bi bi-clock"></i>紀錄</button>
+      <button class="nav-item" onclick="goTo('page-mypage')"><i class="bi bi-person"></i>我的</button>
     </nav>
   </div>
 
@@ -1319,7 +1307,7 @@
       <div class="confirm-hero">
         <div style="display:flex;justify-content:center;align-items:center;gap:16px;margin-bottom:16px">
           <img src="https://i.pravatar.cc/96?img=47" style="width:56px;height:56px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.15)" />
-          <div style="font-size:28px">✉️</div>
+          <div style="font-size:44px;color:var(--green)"><i class="bi bi-envelope-heart-fill"></i></div>
           <img src="https://i.pravatar.cc/96?img=23" style="width:56px;height:56px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.15)" />
         </div>
         <div class="confirm-title">邀請李小花一起玩</div>
@@ -1327,32 +1315,32 @@
       </div>
 
       <div class="card">
-        <div class="card-title">📋 約定詳情</div>
+        <div class="card-title"><i class="bi bi-clipboard2-check-fill" style="color:var(--sky)"></i> 約定詳情</div>
         <div style="display:flex;flex-direction:column;gap:10px;font-size:14px">
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="color:var(--text-sub)">📍 場所</span>
+            <span style="color:var(--text-sub)"><i class="bi bi-geo-alt-fill"></i> 場所</span>
             <span style="font-weight:700">三井 LaLaport 林口</span>
           </div>
           <div class="divider" style="margin:2px 0"></div>
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="color:var(--text-sub)">📅 時段</span>
+            <span style="color:var(--text-sub)"><i class="bi bi-calendar-week"></i> 時段</span>
             <span style="font-weight:700">這週六下午 1–5</span>
           </div>
           <div class="divider" style="margin:2px 0"></div>
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="color:var(--text-sub)">👶 小孩</span>
+            <span style="color:var(--text-sub)"><i class="bi bi-person-fill"></i> 小孩</span>
             <span style="font-weight:700">小明（3歲）× 小花（4歲）</span>
           </div>
         </div>
       </div>
 
       <div class="info-box">
-        💡 送出後你可以在「配對紀錄」查看對方是否確認
+        <i class="bi bi-info-circle-fill" style="color:var(--yellow)"></i> 送出後你可以在「配對紀錄」查看對方是否確認
       </div>
 
       <div style="display:flex;gap:10px">
         <button class="btn btn-secondary" style="flex:1" onclick="goTo('page-results')">返回</button>
-        <button class="btn btn-primary" style="flex:2" onclick="goTo('page-sent')">送出邀請 ✉️</button>
+        <button class="btn btn-primary" style="flex:2" onclick="goTo('page-sent')"><i class="bi bi-send-fill"></i> 送出邀請 ✉️</button>
       </div>
     </div>
   </div>
@@ -1360,14 +1348,14 @@
   <!-- ════ SENT (等待對方確認) ════ -->
   <div class="page" id="page-sent">
     <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px 32px;text-align:center;background:linear-gradient(160deg,#E8F8EE,#FFF8F0)">
-      <div style="font-size:64px;margin-bottom:20px;animation:bounce 2s ease infinite">📨</div>
+      <div style="font-size:64px;margin-bottom:20px;animation:bounce 2s ease infinite;color:var(--green)"><i class="bi bi-envelope-check-fill"></i></div>
       <div style="font-family:'Nunito',sans-serif;font-size:26px;font-weight:900;margin-bottom:10px">邀請已送出！</div>
       <div style="font-size:14px;color:var(--text-sub);line-height:1.8;margin-bottom:32px">
         李小花媽媽收到通知後<br>會在 48 小時內回覆<br>
         <span style="color:var(--green);font-weight:600">確認後你會收到 LINE 通知</span>
       </div>
       <button class="btn btn-primary" style="width:100%;margin-bottom:12px" onclick="goTo('page-incoming')">
-        👀 模擬對方收到邀請的畫面
+        <i class="bi bi-eye-fill"></i> 模擬對方收到邀請的畫面
       </button>
       <button class="btn btn-secondary" style="width:100%" onclick="goTo('page-home')">回到首頁</button>
     </div>
@@ -1376,7 +1364,7 @@
   <!-- ════ INCOMING (對方收到邀請，進來確認) ════ -->
   <div class="page" id="page-incoming">
     <div class="topbar">
-      <span class="topbar-title">👋 有人想約你！</span>
+      <span class="topbar-title"><i class="bi bi-bell-fill" style="color:var(--yellow)"></i> 有人想約你！</span>
     </div>
     <div class="scroll-content">
 
@@ -1400,16 +1388,16 @@
             <span class="badge badge-blue">情緒穩定</span>
           </div>
           <div style="display:flex;flex-wrap:wrap;gap:6px">
-            <span class="badge badge-peach">🏃 跑跳追逐</span>
-            <span class="badge badge-peach">🧩 積木</span>
-            <span class="badge badge-peach">🌳 戶外探索</span>
+            <span class="badge badge-peach"><i class="bi bi-lightning-fill"></i> 跑跳追逐</span>
+            <span class="badge badge-peach"><i class="bi bi-puzzle-fill"></i> 積木</span>
+            <span class="badge badge-peach"><i class="bi bi-tree-fill"></i> 戶外探索</span>
           </div>
         </div>
       </div>
 
       <!-- 家長自介 -->
       <div class="card">
-        <div class="card-title">💬 家長說</div>
+        <div class="card-title"><i class="bi bi-chat-heart-fill" style="color:var(--peach)"></i> 家長說</div>
         <div style="font-size:13px;color:var(--text-sub);line-height:1.8;background:var(--bg);padding:12px;border-radius:var(--radius-sm)">
           「希望小孩有固定玩伴，我自己也希望認識同齡家長，不用每次找話題，一起帶小孩玩就好。」
         </div>
@@ -1417,27 +1405,27 @@
 
       <!-- 約定詳情 -->
       <div class="card">
-        <div class="card-title">📋 約定詳情</div>
+        <div class="card-title"><i class="bi bi-clipboard2-check-fill" style="color:var(--sky)"></i> 約定詳情</div>
         <div style="display:flex;flex-direction:column;gap:10px;font-size:14px">
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="color:var(--text-sub)">📍 場所</span>
+            <span style="color:var(--text-sub)"><i class="bi bi-geo-alt-fill"></i> 場所</span>
             <span style="font-weight:700">三井 LaLaport 林口</span>
           </div>
           <div class="divider" style="margin:2px 0"></div>
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="color:var(--text-sub)">📅 時段</span>
+            <span style="color:var(--text-sub)"><i class="bi bi-calendar-week"></i> 時段</span>
             <span style="font-weight:700">這週六下午 1–5</span>
           </div>
           <div class="divider" style="margin:2px 0"></div>
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="color:var(--text-sub)">👶 小孩</span>
+            <span style="color:var(--text-sub)"><i class="bi bi-person-fill"></i> 小孩</span>
             <span style="font-weight:700">小明（3歲）× 小花（4歲）</span>
           </div>
         </div>
       </div>
 
       <div class="info-box">
-        💡 接受後雙方都會收到 LINE 通知，並看到破冰小提示
+        <i class="bi bi-info-circle-fill" style="color:var(--yellow)"></i> 接受後雙方都會收到 LINE 通知，並看到破冰小提示
       </div>
 
       <!-- 行動按鈕 -->
@@ -1456,17 +1444,17 @@
   <div class="page" id="page-success">
     <div style="display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:16px">
       <img src="https://i.pravatar.cc/96?img=47" style="width:64px;height:64px;border-radius:50%;border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,0.12)" />
-      <div style="font-size:32px">🎉</div>
+      <div style="font-size:44px;color:#32E1C8"><i class="bi bi-stars"></i></div>
       <img src="https://i.pravatar.cc/96?img=23" style="width:64px;height:64px;border-radius:50%;border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,0.12)" />
     </div>
     <div class="success-title">邀請已送出！</div>
     <div class="success-sub">李小花媽媽收到通知後<br>會在 48 小時內回覆</div>
     <div class="icebreaker-box">
-      <div class="icebreaker-title">💡 破冰小提示</div>
+      <div class="icebreaker-title"><i class="bi bi-lightbulb-fill"></i> 破冰小提示</div>
       <div class="icebreaker-row">
-        🌸 小花喜歡「畫畫、角色扮演」<br>
-        😊 個性文靜，慢熱，需要時間暖機<br>
-        📍 建議在場所門口碰面，讓小孩自己探索<br>
+        <i class="bi bi-heart-fill" style="color:var(--peach)"></i> 小花喜歡「畫畫、角色扮演」<br>
+        <i class="bi bi-emoji-smile" style="color:var(--green)"></i> 個性文靜，慢熱，需要時間暖機<br>
+        <i class="bi bi-geo-alt-fill" style="color:var(--sky)"></i> 建議在場所門口碰面，讓小孩自己探索<br>
         ⏱️ 玩個 1 小時就很足夠，輕鬆就好
       </div>
     </div>
@@ -1490,7 +1478,7 @@
       <div class="card" style="border-left:4px solid var(--green)">
         <div class="status-row">
           <div style="font-weight:700">王小寶・林口運動公園</div>
-          <span class="badge badge-green">✅ 已確認</span>
+          <span class="badge badge-green"><i class="bi bi-check-circle-fill"></i> 已確認</span>
         </div>
         <div style="font-size:12px;color:var(--text-sub);margin-top:4px">週日下午・2024/01/20</div>
         <div style="margin-top:10px">
@@ -1501,10 +1489,10 @@
       </div>
     </div>
     <nav class="bottom-nav">
-      <button class="nav-item" onclick="goTo('page-home')"><img src="images/icon-home.png" class="nav-icon" alt="首頁"/>首頁</button>
-      <button class="nav-item" onclick="goTo('page-find')"><img src="images/icon-find.png" class="nav-icon" alt="尋找"/>尋找</button>
-      <button class="nav-item active" onclick="goTo('page-history')"><img src="images/icon-history.png" class="nav-icon active-icon" alt="紀錄"/>紀錄</button>
-      <button class="nav-item" onclick="goTo('page-mypage')"><img src="images/icon-me.png" class="nav-icon" alt="我的"/>我的</button>
+      <button class="nav-item" onclick="goTo('page-home')"><i class="bi bi-house"></i>首頁</button>
+      <button class="nav-item" onclick="goTo('page-find')"><i class="bi bi-search-heart"></i>尋找</button>
+      <button class="nav-item active" onclick="goTo('page-history')"><i class="bi bi-clock-history"></i>紀錄</button>
+      <button class="nav-item" onclick="goTo('page-mypage')"><i class="bi bi-person"></i>我的</button>
     </nav>
   </div>
 
@@ -1519,16 +1507,16 @@
         <div>
           <div class="profile-name" id="profile-name">小明媽媽</div>
           <div style="font-size:13px;color:var(--text-sub)">小明・3歲男生・林口區</div>
-          <div style="margin-top:8px"><span class="badge badge-green">✅ 帳號啟用中</span></div>
+          <div style="margin-top:8px"><span class="badge badge-green"><i class="bi bi-check-circle-fill"></i> 帳號啟用中</span></div>
         </div>
       </div>
       <div class="menu-item" onclick="goTo('page-register')">
-        <div class="menu-icon" style="background:var(--green-light)">✏️</div>
+        <div class="menu-icon" style="background:var(--green-light)"><i class="bi bi-pencil-fill" style="color:var(--green)"></i></div>
         <div class="menu-label">編輯個人資料</div>
         <div class="menu-arrow">›</div>
       </div>
       <div class="menu-item" onclick="goTo('page-venue-request')">
-        <div class="menu-icon" style="background:var(--blue-light)">📍</div>
+        <div class="menu-icon" style="background:var(--sky-light)"><i class="bi bi-geo-alt-fill" style="color:var(--sky)"></i></div>
         <div class="menu-label">推薦新場所</div>
         <div class="menu-arrow">›</div>
       </div>
@@ -1538,16 +1526,16 @@
         <div class="menu-arrow">›</div>
       </div>
       <div class="menu-item">
-        <div class="menu-icon" style="background:var(--peach-light)">❓</div>
+        <div class="menu-icon" style="background:var(--peach-light)"><i class="bi bi-question-circle-fill" style="color:var(--peach)"></i></div>
         <div class="menu-label">常見問題</div>
         <div class="menu-arrow">›</div>
       </div>
     </div>
     <nav class="bottom-nav">
-      <button class="nav-item" onclick="goTo('page-home')"><img src="images/icon-home.png" class="nav-icon" alt="首頁"/>首頁</button>
-      <button class="nav-item" onclick="goTo('page-find')"><img src="images/icon-find.png" class="nav-icon" alt="尋找"/>尋找</button>
-      <button class="nav-item" onclick="goTo('page-history')"><img src="images/icon-history.png" class="nav-icon" alt="紀錄"/>紀錄</button>
-      <button class="nav-item active" onclick="goTo('page-mypage')"><img src="images/icon-me.png" class="nav-icon active-icon" alt="我的"/>我的</button>
+      <button class="nav-item" onclick="goTo('page-home')"><i class="bi bi-house"></i>首頁</button>
+      <button class="nav-item" onclick="goTo('page-find')"><i class="bi bi-search-heart"></i>尋找</button>
+      <button class="nav-item" onclick="goTo('page-history')"><i class="bi bi-clock"></i>紀錄</button>
+      <button class="nav-item active" onclick="goTo('page-mypage')"><i class="bi bi-person-fill"></i>我的</button>
     </nav>
   </div>
 
@@ -1559,7 +1547,7 @@
     </div>
     <div class="scroll-content">
       <div class="info-box">
-        📌 推薦規則：必須是適合學齡前小孩的<b>實體營業或公共場所</b>，審核通過後會出現在場所清單，並通知你！
+        <i class="bi bi-pin-fill" style="color:var(--yellow)"></i> 推薦規則：必須是適合學齡前小孩的<b>實體營業或公共場所</b>，審核通過後會出現在場所清單，並通知你！
       </div>
       <div class="form-group">
         <label class="form-label">場所名稱<span>*</span></label>
@@ -1597,7 +1585,7 @@
         <label class="form-label">推薦理由<span>*</span></label>
         <textarea class="form-textarea" placeholder="為什麼推薦這個地方？有什麼特別適合小孩的地方？"></textarea>
       </div>
-      <button class="btn btn-peach" onclick="alert('申請已送出！審核通過後會通知你 🎉')">送出申請</button>
+      <button class="btn btn-peach" onclick="alert('申請已送出！審核通過後會通知你！')">送出申請</button>
     </div>
   </div>
 
