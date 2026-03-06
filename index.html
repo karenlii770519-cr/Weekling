@@ -8,6 +8,7 @@
 <meta property="og:title" content="孩子的友情你來經紀">
 <meta property="og:description" content="不用社交，只是剛好在附近。讓孩子週末變得更豐富">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -1633,21 +1634,46 @@
 
   // 頁面載入時執行
   loadConfig();
+  initLiff();
 
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbxy2UJWXi_FbXUtmIbrSlXAoBhFJEIzm2rSH2mw4dIlyKYLBRC9Kb-K61MtbEHBj6Fa0Q/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwS7Cdx3JTEAq3QUAqsStvJeaK0clcUiMnyqSZ80RfPVebOI42yerfLcPmsQFguXlCWIQ/exec";
   const LIFF_ID = "2008649114-wxWy3jJs";
 
-  // ── 模擬 LIFF 取得 LINE 資料 ──
-  // 真實環境換成：
-  // liff.init({liffId}).then(async () => {
-  //   const profile = await liff.getProfile();
-  //   applyLineProfile(profile.displayName, profile.pictureUrl, profile.userId);
-  // });
+  // ── LIFF 初始化 ──
+  async function initLiff() {
+    try {
+      await liff.init({ liffId: LIFF_ID });
 
-  const MOCK_PROFILE = {
-    displayName: "小明媽媽",
-    pictureUrl: "https://i.pravatar.cc/128?img=47",
-    userId: "U001"
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+
+      const profile = await liff.getProfile();
+      applyLineProfile(profile.displayName, profile.pictureUrl, profile.userId);
+
+    } catch (e) {
+      console.warn("LIFF init failed, using mock:", e);
+      // 非 LINE 環境（電腦瀏覽器）用假資料
+      applyLineProfile("小明媽媽", "https://i.pravatar.cc/128?img=47", "U_MOCK_001");
+    }
+  }
+
+  function applyLineProfile(name, avatar, uid) {
+    // 存到全域
+    window.LINE_UID = uid;
+    window.LINE_NAME = name;
+    window.LINE_AVATAR = avatar;
+
+    // 套入 UI
+    document.getElementById("home-name").textContent = name;
+    document.getElementById("home-avatar").src = avatar;
+    document.getElementById("reg-nickname").value = name;
+
+    const meAvatar = document.getElementById("me-avatar");
+    const meName = document.getElementById("me-name");
+    if (meAvatar) meAvatar.src = avatar;
+    if (meName) meName.textContent = name;
   };
 
   function applyLineProfile(name, pic, uid) {
