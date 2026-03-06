@@ -1199,7 +1199,7 @@
         </div>
       </div>
 
-      <button class="btn btn-primary" onclick="goTo('page-results')"><i class="bi bi-search"></i> 開始配對</button>
+      <button class="btn btn-primary" onclick="startFindMatches()"><i class="bi bi-search"></i> 開始配對</button>
     </div>
     <nav class="bottom-nav">
         <button class="nav-item" onclick="goTo('page-home')"><i class="bi bi-house"></i>首頁</button>
@@ -1213,66 +1213,14 @@
   <div class="page" id="page-results">
     <div class="topbar">
       <button class="back-btn" onclick="goTo('page-find')">←</button>
-      <span class="topbar-title">找到 2 個玩伴</span>
+      <span class="topbar-title" id="results-title">搜尋中...</span>
     </div>
     <div class="scroll-content">
       <div style="font-size:13px;color:var(--text-sub);margin-bottom:16px">
         以下是符合條件的家庭，點「邀請約玩」送出邀請
       </div>
-
-      <!-- 配對結果 1 -->
-      <div class="match-card">
-        <div class="match-header">
-          <img class="line-avatar-match" src="https://i.pravatar.cc/96?img=23" alt="頭像" />
-          <div style="flex:1">
-            <div class="match-name">李小花・4歲女生</div>
-            <div style="font-size:12px;color:var(--text-sub)">李美麗媽媽・林口區</div>
-          </div>
-        </div>
-        <div class="match-tags">
-          <span class="badge badge-purple">文靜內斂</span>
-          <span class="badge badge-blue">慢熱但熟了很好</span>
-          <span class="badge badge-green">動靜皆宜</span>
-        </div>
-        <div class="match-info-row">
-          <span class="badge badge-peach"><i class="bi bi-brush-fill"></i> 畫畫／手作</span>
-          <span class="badge badge-peach"><i class="bi bi-book-fill"></i> 看繪本</span>
-          <span class="badge badge-peach"><i class="bi bi-masks-theater"></i> 角色扮演</span>
-        </div>
-        <div class="match-intro">
-          <i class="bi bi-chat-quote-fill" style="color:var(--sky)"></i>「小花比較慢熱，希望找個有耐心的玩伴家庭，大人也可以一起喝個咖啡聊聊。」
-        </div>
-        <div style="font-size:12px;color:var(--text-sub);margin-bottom:12px">
-          <i class="bi bi-geo-alt-fill" style="color:var(--peach)"></i> 共同場所：三井 LaLaport ｜ <i class="bi bi-clock" style="color:var(--text-sub)"></i> 週六下午、週日下午
-        </div>
-        <button class="btn btn-primary" onclick="goTo('page-confirm')"><i class="bi bi-send-fill"></i> 邀請約玩</button>
-      </div>
-
-      <!-- 配對結果 2 -->
-      <div class="match-card blue">
-        <div class="match-header">
-          <img class="line-avatar-match" src="https://i.pravatar.cc/96?img=12" alt="頭像" />
-          <div style="flex:1">
-            <div class="match-name">陳小虎・3歲男生</div>
-            <div style="font-size:12px;color:var(--text-sub)">陳大偉爸爸・林口區</div>
-          </div>
-        </div>
-        <div class="match-tags">
-          <span class="badge badge-green">活潑外向</span>
-          <span class="badge badge-yellow">精力充沛</span>
-        </div>
-        <div class="match-info-row">
-          <span class="badge badge-peach"><i class="bi bi-lightning-fill"></i> 跑跳追逐</span>
-          <span class="badge badge-peach"><i class="bi bi-dribbble"></i> 球類運動</span>
-          <span class="badge badge-peach"><i class="bi bi-tree-fill"></i> 戶外探索</span>
-        </div>
-        <div class="match-intro">
-          <i class="bi bi-chat-quote-fill" style="color:var(--sky)"></i>「帶小虎出門就是要讓他跑！歡迎同樣精力旺盛的小孩一起玩。」
-        </div>
-        <div style="font-size:12px;color:var(--text-sub);margin-bottom:12px">
-          <i class="bi bi-geo-alt-fill" style="color:var(--peach)"></i> 共同場所：林口運動公園 ｜ <i class="bi bi-clock" style="color:var(--text-sub)"></i> 週日下午
-        </div>
-        <button class="btn btn-primary" onclick="goTo('page-confirm')"><i class="bi bi-send-fill"></i> 邀請約玩</button>
+      <div id="match-results-container">
+        <div style="text-align:center;padding:40px;color:var(--text-sub)">搜尋中...</div>
       </div>
     </div>
     <nav class="bottom-nav">
@@ -1631,7 +1579,7 @@
   // 頁面載入時執行
   loadConfig();
 
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbwSBCfSP9FLnA5MqvHCec53ZLjghlOh9PqtFthX4-oqu-Hkm1QS4DGc2uUe4ETVxEzo/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycby_4ZUH1OoR6q3xJtQ3swBJ6fqw1NGP7BnVl7-QuZfjr1RT_hxDtEQ68AU6gxWy0XZ3/exec";
   const LIFF_ID = "2008649114-wxWy3jJs";
 
   // 常數定義完後才初始化
