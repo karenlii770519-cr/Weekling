@@ -1091,7 +1091,7 @@
           <div style="font-weight:700;font-size:14px">⏳ 等待對方確認</div>
           <div class="badge badge-yellow">1 筆</div>
         </div>
-        <div style="font-size:13px;color:var(--text-sub)">李小花媽媽 已收到你的邀請，請等候回應</div>
+        <div style="font-size:13px;color:var(--text-sub)" id="pending-msg">暫無等待確認的邀請</div>
       </div>
 
       <!-- 快捷功能 -->
@@ -1453,25 +1453,10 @@
       <button class="back-btn" onclick="goTo('page-home')">←</button>
       <span class="topbar-title">配對紀錄</span>
     </div>
-    <div class="scroll-content">
-      <div class="card" style="border-left:4px solid var(--yellow)">
-        <div class="status-row">
-          <div style="font-weight:700">李小花・三井 LaLaport</div>
-          <span class="badge badge-yellow">⏳ 等待確認</span>
-        </div>
-        <div style="font-size:12px;color:var(--text-sub);margin-top:4px">週六下午・送出於 2024/01/28</div>
-      </div>
-      <div class="card" style="border-left:4px solid var(--green)">
-        <div class="status-row">
-          <div style="font-weight:700">王小寶・林口運動公園</div>
-          <span class="badge badge-green"><i class="bi bi-check-circle-fill"></i> 已確認</span>
-        </div>
-        <div style="font-size:12px;color:var(--text-sub);margin-top:4px">週日下午・2024/01/20</div>
-        <div style="margin-top:10px">
-          <button class="btn btn-secondary" style="width:auto;padding:8px 16px;font-size:13px;border-radius:100px">
-            開啟 LINE 聊天
-          </button>
-        </div>
+    <div class="scroll-content" id="history-list">
+      <div style="text-align:center;padding:40px 20px;color:var(--text-sub);font-size:14px">
+        <i class="bi bi-clock-history" style="font-size:32px;display:block;margin-bottom:12px;opacity:0.3"></i>
+        還沒有配對紀錄
       </div>
     </div>
     <nav class="bottom-nav">
@@ -1491,8 +1476,8 @@
       <div class="profile-hero">
         <img class="line-avatar-lg" id="profile-avatar" src="https://i.pravatar.cc/128?img=47" alt="頭像" />
         <div>
-          <div class="profile-name" id="profile-name">小明媽媽</div>
-          <div style="font-size:13px;color:var(--text-sub)">小明・3歲男生・林口區</div>
+          <div class="profile-name" id="profile-name">載入中...</div>
+          <div style="font-size:13px;color:var(--text-sub)" id="profile-sub">載入中...</div>
           <div style="margin-top:8px"><span class="badge badge-green"><i class="bi bi-check-circle-fill"></i> 帳號啟用中</span></div>
         </div>
       </div>
@@ -1711,8 +1696,8 @@
 
         const profileName = document.getElementById("profile-name");
         if (profileName) profileName.textContent = p.nickname || window.LINE_NAME;
-        const profileSub = document.querySelector(".profile-sub");
-        if (profileSub) profileSub.textContent = [p.childName, age ? age+"歲" : "", p.area].filter(Boolean).join("・");
+        const profileSub = document.getElementById("profile-sub");
+        if (profileSub) profileSub.textContent = [p.childName, age ? age+"歲" : p.childGender, p.area].filter(Boolean).join("・");
       } else {
         const homeSub = document.getElementById("home-sub");
         if (homeSub) homeSub.textContent = "點下方完成註冊 👇";
