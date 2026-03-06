@@ -948,7 +948,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">小孩姓名<span>*</span></label>
-          <input class="form-input" placeholder="小名即可" />
+          <input class="form-input" id="reg-childname" placeholder="小名即可" />
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div class="form-group">
@@ -957,14 +957,14 @@
           </div>
           <div class="form-group">
             <label class="form-label">性別</label>
-            <select class="form-select">
+            <select class="form-select" id="reg-gender">
               <option>男</option><option>女</option><option>不透露</option>
             </select>
           </div>
         </div>
         <div class="form-group">
           <label class="form-label">就讀幼兒園／托嬰</label>
-          <input class="form-input" placeholder="輔助驗證用，不公開" />
+          <input class="form-input" id="reg-kindergarten" placeholder="輔助驗證用，不公開" />
         </div>
         <div class="form-group">
           <label class="form-label">小孩生肖<span>*</span></label>
@@ -1017,24 +1017,24 @@
         </div>
         <div class="form-group">
           <label class="form-label">家長自介或期許</label>
-          <textarea class="form-textarea" placeholder="跟其他家長說說你的期待吧！例如：希望小孩有固定玩伴，我自己也希望認識同齡家長，不用每次找話題，一起帶小孩玩就好。（最多200字）"></textarea>
+          <textarea class="form-textarea" id="reg-intro" placeholder="跟其他家長說說你的期待吧！例如：希望小孩有固定玩伴，我自己也希望認識同齡家長，不用每次找話題，一起帶小孩玩就好。（最多200字）"></textarea>
         </div>
         <div class="card">
           <div class="card-title"><i class="bi bi-calendar-week" style="color:var(--sky)"></i> 可約時段（可複選）</div>
           <div class="timeslot-grid">
-            <div class="timeslot-btn" onclick="toggleSlot(this)">
+            <div class="timeslot-btn" id="slot-satAM" onclick="toggleSlot(this)">
               <div class="timeslot-day">週六</div>
               <div class="timeslot-time">上午 9–12</div>
             </div>
-            <div class="timeslot-btn" onclick="toggleSlot(this)">
+            <div class="timeslot-btn" id="slot-satPM" onclick="toggleSlot(this)">
               <div class="timeslot-day">週六</div>
               <div class="timeslot-time">下午 1–5</div>
             </div>
-            <div class="timeslot-btn" onclick="toggleSlot(this)">
+            <div class="timeslot-btn" id="slot-sunAM" onclick="toggleSlot(this)">
               <div class="timeslot-day">週日</div>
               <div class="timeslot-time">上午 9–12</div>
             </div>
-            <div class="timeslot-btn" onclick="toggleSlot(this)">
+            <div class="timeslot-btn" id="slot-sunPM" onclick="toggleSlot(this)">
               <div class="timeslot-day">週日</div>
               <div class="timeslot-time">下午 1–5</div>
             </div>
@@ -1042,7 +1042,7 @@
         </div>
         <div style="display:flex;gap:10px">
           <button class="btn btn-secondary" style="flex:1" onclick="regNext(2)">上一步</button>
-          <button class="btn btn-primary" style="flex:2" onclick="goTo('page-home')">完成註冊 <i class="bi bi-check-circle-fill"></i></button>
+          <button class="btn btn-primary" style="flex:2" onclick="submitRegister()">完成註冊 <i class="bi bi-check-circle-fill"></i></button>
         </div>
       </div>
 
@@ -1700,6 +1700,64 @@
 
   function selectVenue(el) {
     el.classList.toggle('selected');
+  }
+
+
+  // ── 註冊送出 ──
+  async function submitRegister() {
+    const btn = document.querySelector('#reg-step3 .btn-primary');
+    btn.textContent = "送出中...";
+    btn.disabled = true;
+
+    // 收集個性標籤
+    const personalityTags = [...document.querySelectorAll('#tags-personality .tag-chip.selected')].map(el => el.textContent);
+    // 收集活動標籤
+    const likedActivities = [...document.querySelectorAll('#tags-liked .tag-chip.selected')].map(el => el.textContent);
+    // 收集場所
+    const preferVenues = [...document.querySelectorAll('#venue-list .venue-option.selected')].map(el => el.dataset.id).join(",");
+
+    const data = {
+      lineUid:         window.LINE_UID || "U_MOCK_001",
+      nickname:        document.getElementById("reg-nickname")?.value || window.LINE_NAME || "",
+      phone:           "",
+      area:            document.getElementById("reg-area")?.value || "",
+      childName:       document.getElementById("reg-childname")?.value || "",
+      childBirthday:   document.getElementById("reg-birthday")?.value || "",
+      childGender:     document.getElementById("reg-gender")?.value || "",
+      kindergarten:    document.getElementById("reg-kindergarten")?.value || "",
+      zodiac:          document.getElementById("reg-zodiac")?.value || "",
+      personalityTags: personalityTags,
+      emotionTag:      "",
+      energyTag:       "",
+      likedActivities: likedActivities,
+      dislikedActivities: [],
+      parentIntro:     document.getElementById("reg-intro")?.value || "",
+      preferVenues:    preferVenues,
+      satAM: document.getElementById("slot-satAM")?.classList.contains("selected"),
+      satPM: document.getElementById("slot-satPM")?.classList.contains("selected"),
+      sunAM: document.getElementById("slot-sunAM")?.classList.contains("selected"),
+      sunPM: document.getElementById("slot-sunPM")?.classList.contains("selected"),
+    };
+
+    try {
+      const res = await fetch(GAS_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "register", data: data })
+      });
+      const result = await res.json();
+      if (result.success) {
+        goTo("page-home");
+      } else {
+        alert("送出失敗：" + result.message);
+        btn.textContent = "完成註冊";
+        btn.disabled = false;
+      }
+    } catch(e) {
+      alert("網路錯誤：" + e);
+      btn.textContent = "完成註冊";
+      btn.disabled = false;
+    }
   }
 
   function regNext(step) {
