@@ -1088,7 +1088,7 @@
       <!-- 配對狀態卡 -->
       <div class="card" style="border-left:4px solid var(--yellow)">
         <div class="status-row">
-          <div style="font-weight:700;font-size:14px">⏳ 等待對方確認</div>
+          <div style="font-weight:700;font-size:14px"><i class="bi bi-hourglass-split" style="color:var(--yellow)"></i> 等待對方確認</div>
           <div class="badge badge-yellow">1 筆</div>
         </div>
         <div style="font-size:13px;color:var(--text-sub)" id="pending-msg">暫無等待確認的邀請</div>
@@ -1237,7 +1237,7 @@
 
       <div style="display:flex;gap:10px">
         <button class="btn btn-secondary" style="flex:1" onclick="goTo('page-results')">返回</button>
-        <button class="btn btn-primary" style="flex:2" onclick="goTo('page-sent')"><i class="bi bi-send-fill"></i> 送出邀請 ✉️</button>
+        <button class="btn btn-primary" style="flex:2" onclick="goTo('page-sent')"><i class="bi bi-send-fill"></i> 送出邀請</button>
       </div>
     </div>
   </div>
@@ -1352,7 +1352,7 @@
         <i class="bi bi-heart-fill" style="color:var(--peach)"></i> 小花喜歡「畫畫、角色扮演」<br>
         <i class="bi bi-emoji-smile" style="color:var(--green)"></i> 個性文靜，慢熱，需要時間暖機<br>
         <i class="bi bi-geo-alt-fill" style="color:var(--sky)"></i> 建議在場所門口碰面，讓小孩自己探索<br>
-        ⏱️ 玩個 1 小時就很足夠，輕鬆就好
+        <i class="bi bi-clock" style="color:var(--text-sub)"></i> 玩個 1 小時就很足夠，輕鬆就好
       </div>
     </div>
     <button class="btn btn-primary" style="width:100%" onclick="goTo('page-home')">回到首頁</button>
@@ -1542,7 +1542,7 @@
   // 頁面載入時執行
   loadConfig();
 
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbwMKsIrGL1_lRUxZ-iASZloZiSmr7tVmzxRPUL-dDH95VtAALQUkz2-lwH3UIbE-tqK/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwQcAyR3AnsAmFpjq2yNT2LnHjPwmxKUi1GWNuGZGZq2i5cxQONlBeM5tr0OYgFKubO/exec";
   const LIFF_ID = "2008649114-wxWy3jJs";
 
   // 常數定義完後才初始化
@@ -1611,7 +1611,7 @@
         if (profileSub) profileSub.textContent = [p.childName, age ? age+"歲" : p.childGender, p.area].filter(Boolean).join("・");
       } else {
         const homeSub = document.getElementById("home-sub");
-        if (homeSub) homeSub.textContent = "點下方完成註冊 👇";
+        if (homeSub) homeSub.textContent = "點下方完成登記 ↓";
       }
     } catch(e) {
       const homeSub = document.getElementById("home-sub");
@@ -1802,7 +1802,7 @@
         if (profileSub) profileSub.textContent = [p.childName, age?age+"歲":p.childGender, p.area].filter(Boolean).join("・");
       } else {
         const homeSub = document.getElementById("home-sub");
-        if (homeSub) homeSub.textContent = "點下方完成登記 👇";
+        if (homeSub) homeSub.textContent = "點下方完成登記 ↓";
       }
     } catch(e) {
       const homeSub = document.getElementById("home-sub");
