@@ -1634,10 +1634,12 @@
 
   // 頁面載入時執行
   loadConfig();
-  initLiff();
 
   const GAS_URL = "https://script.google.com/macros/s/AKfycbxLl-FwWuKdFTxo4QDD03sMzWcHsDO4v3uks_XPfFYeXIBwy0omTpskTMtAcebGBkTg/exec";
   const LIFF_ID = "2008649114-wxWy3jJs";
+
+  // 常數定義完後才初始化
+  initLiff();
 
   // ── LIFF 初始化 ──
   async function initLiff() {
@@ -1653,8 +1655,11 @@
       applyLineProfile(profile.displayName, profile.pictureUrl, profile.userId);
 
     } catch (e) {
-      console.warn("LIFF init failed, using mock:", e);
-      // 非 LINE 環境（電腦瀏覽器）用假資料
+      console.warn("LIFF init failed:", e);
+      // 顯示錯誤訊息幫助 debug
+      const errMsg = e && e.message ? e.message : String(e);
+      document.getElementById("home-name").textContent = "錯誤: " + errMsg;
+      // fallback
       applyLineProfile("小明媽媽", "https://i.pravatar.cc/128?img=47", "U_MOCK_001");
     }
   }
@@ -1676,27 +1681,6 @@
     if (meName) meName.textContent = name;
   };
 
-  function applyLineProfile(name, pic, uid) {
-    // 首頁
-    const homeName = document.getElementById('home-name');
-    const homeAvatar = document.getElementById('home-avatar');
-    if (homeName) homeName.textContent = name;
-    if (homeAvatar) homeAvatar.src = pic;
-    // 我的頁面
-    const profileName = document.getElementById('profile-name');
-    const profileAvatar = document.getElementById('profile-avatar');
-    if (profileName) profileName.textContent = name;
-    if (profileAvatar) profileAvatar.src = pic;
-    // 註冊暱稱
-    const regNickname = document.getElementById('reg-nickname');
-    if (regNickname) regNickname.value = name;
-  }
-
-  // 頁面載入時自動帶入
-  window.addEventListener('DOMContentLoaded', () => {
-    applyLineProfile(MOCK_PROFILE.displayName, MOCK_PROFILE.pictureUrl, MOCK_PROFILE.userId);
-  });
-
   function goTo(pageId) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const target = document.getElementById(pageId);
@@ -1704,8 +1688,10 @@
       target.classList.add('active');
       target.scrollTop = 0;
     }
-    // 每次切換頁面重新套用 LINE 資料
-    applyLineProfile(MOCK_PROFILE.displayName, MOCK_PROFILE.pictureUrl, MOCK_PROFILE.userId);
+    // 重新套用 LINE 資料
+    if (window.LINE_NAME) {
+      applyLineProfile(window.LINE_NAME, window.LINE_AVATAR, window.LINE_UID);
+    }
   }
 
   function toggleTag(el) {
