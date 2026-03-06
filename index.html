@@ -1740,19 +1740,14 @@
     };
 
     try {
-      const res = await fetch(GAS_URL, {
+      await fetch(GAS_URL, {
         method: "POST",
+        mode: "no-cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "register", data: data })
       });
-      const result = await res.json();
-      if (result.success) {
-        goTo("page-home");
-      } else {
-        alert("送出失敗：" + result.message);
-        btn.textContent = "完成註冊";
-        btn.disabled = false;
-      }
+      // no-cors 無法讀取回傳值，直接跳頁
+      goTo("page-home");
     } catch(e) {
       alert("網路錯誤：" + e);
       btn.textContent = "完成註冊";
