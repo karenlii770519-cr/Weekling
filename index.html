@@ -1574,7 +1574,7 @@
   // ── 動態載入標籤和場所 ──
   async function loadConfig() {
     try {
-      const res = await fetch(GAS_URL + "?action=getConfig");
+      const res = await fetch(GAS_URL);
       const data = await res.json();
       if (!data.success) return;
 
@@ -1636,7 +1636,7 @@
   loadConfig();
   initLiff();
 
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbwS7Cdx3JTEAq3QUAqsStvJeaK0clcUiMnyqSZ80RfPVebOI42yerfLcPmsQFguXlCWIQ/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbxLl-FwWuKdFTxo4QDD03sMzWcHsDO4v3uks_XPfFYeXIBwy0omTpskTMtAcebGBkTg/exec";
   const LIFF_ID = "2008649114-wxWy3jJs";
 
   // ── LIFF 初始化 ──
