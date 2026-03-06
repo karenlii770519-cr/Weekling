@@ -1641,26 +1641,18 @@
   // 常數定義完後才初始化
   initLiff();
 
-  // ── LIFF 初始化 ──
+  // ── LIFF 初始化（背景連線，不強制登入）──
   async function initLiff() {
     try {
       await liff.init({ liffId: LIFF_ID });
-
-      if (!liff.isLoggedIn()) {
+      if (liff.isLoggedIn()) {
+        const profile = await liff.getProfile();
+        applyLineProfile(profile.displayName, profile.pictureUrl, profile.userId);
+      } else {
         liff.login();
-        return;
       }
-
-      const profile = await liff.getProfile();
-      applyLineProfile(profile.displayName, profile.pictureUrl, profile.userId);
-
-    } catch (e) {
-      console.warn("LIFF init failed:", e);
-      // 顯示錯誤訊息幫助 debug
-      const errMsg = e && e.message ? e.message : String(e);
-      document.getElementById("home-name").textContent = "錯誤: " + errMsg;
-      // fallback
-      applyLineProfile("小明媽媽", "https://i.pravatar.cc/128?img=47", "U_MOCK_001");
+    } catch (err) {
+      console.error("LIFF 背景連線失敗", err);
     }
   }
 
