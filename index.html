@@ -939,11 +939,35 @@
         </div>
         <div class="form-group">
           <label class="form-label">居住地區<span>*</span></label>
-          <select class="form-select">
-            <option>林口區</option>
-            <option>泰山區</option>
-            <option>新莊區</option>
-            <option>五股區</option>
+          <select class="form-select" id="reg-area">
+            <option value="">請選擇地區</option>
+            <optgroup label="新北市">
+              <option>林口區</option>
+              <option>泰山區</option>
+              <option>新莊區</option>
+              <option>五股區</option>
+              <option>八里區</option>
+              <option>淡水區</option>
+              <option>三重區</option>
+              <option>蘆洲區</option>
+              <option>板橋區</option>
+              <option>土城區</option>
+              <option>樹林區</option>
+              <option>鶯歌區</option>
+              <option>三峽區</option>
+            </optgroup>
+            <optgroup label="桃園市">
+              <option>桃園區</option>
+              <option>中壢區</option>
+              <option>平鎮區</option>
+              <option>八德區</option>
+              <option>龜山區</option>
+              <option>蘆竹區</option>
+              <option>大園區</option>
+              <option>觀音區</option>
+              <option>新屋區</option>
+              <option>楊梅區</option>
+            </optgroup>
           </select>
         </div>
         <div class="form-group">
@@ -1055,7 +1079,7 @@
       <div class="home-header-row">
         <div>
           <div class="home-greeting">嗨，<span id="home-name">小明媽媽</span> <i class="bi bi-hand-wave"></i></div>
-          <div class="home-sub">小明，3歲・林口區</div>
+          <div class="home-sub" id="home-sub">載入中...</div>
         </div>
         <img class="line-avatar" id="home-avatar" src="https://i.pravatar.cc/96?img=47" alt="頭像" />
       </div>
@@ -1097,23 +1121,7 @@
       <!-- 本週場所推薦 -->
       <div class="card">
         <div class="card-title"><i class="bi bi-star-fill" style="color:var(--yellow)"></i> 熱門場所</div>
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <div style="display:flex;align-items:center;gap:12px">
-            <div style="font-size:28px"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
-            <div>
-              <div style="font-weight:700;font-size:13px">三井 LaLaport 林口</div>
-              <div style="font-size:11px;color:var(--text-sub)">室內・0-12歲・本週 3 組配對</div>
-            </div>
-          </div>
-          <div class="divider" style="margin:4px 0"></div>
-          <div style="display:flex;align-items:center;gap:12px">
-            <div style="font-size:28px"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
-            <div>
-              <div style="font-weight:700;font-size:13px">卡多磨兒童職人村</div>
-              <div style="font-size:11px;color:var(--text-sub)">室內遊樂・2-8歲・本週 2 組配對</div>
-            </div>
-          </div>
-        </div>
+        <div id="hot-venues" style="display:flex;flex-direction:column;gap:10px"><div style="color:var(--text-sub);font-size:13px">載入中...</div></div>
       </div>
     </div>
     <nav class="bottom-nav">
@@ -1603,14 +1611,17 @@
         </div>`
       ).join("");
 
-      // 更新首頁熱門場所（前兩個）
+      // 更新首頁熱門場所
       const hotContainer = document.getElementById("hot-venues");
-      if (hotContainer && data.venues.length >= 2) {
-        hotContainer.innerHTML = data.venues.slice(0, 2).map(v =>
-          `<div class="venue-card" onclick="goTo('page-find')">
+      if (hotContainer && data.venues.length > 0) {
+        hotContainer.innerHTML = data.venues.slice(0, 3).map((v, i) =>
+          `${i > 0 ? '<div class="divider" style="margin:4px 0"></div>' : ''}
+          <div style="display:flex;align-items:center;gap:12px" onclick="goTo('page-find')" style="cursor:pointer">
             <div style="font-size:28px"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
-            <div class="venue-card-name">${v.name}</div>
-            <div class="venue-card-sub">${v.area}</div>
+            <div>
+              <div style="font-weight:700;font-size:13px">${v.name}</div>
+              <div style="font-size:11px;color:var(--text-sub)">${v.type}・${v.ageRange}</div>
+            </div>
           </div>`
         ).join("");
       }
@@ -1635,7 +1646,7 @@
   // 頁面載入時執行
   loadConfig();
 
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbxLl-FwWuKdFTxo4QDD03sMzWcHsDO4v3uks_XPfFYeXIBwy0omTpskTMtAcebGBkTg/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwSBCfSP9FLnA5MqvHCec53ZLjghlOh9PqtFthX4-oqu-Hkm1QS4DGc2uUe4ETVxEzo/exec";
   const LIFF_ID = "2008649114-wxWy3jJs";
 
   // 常數定義完後才初始化
@@ -1657,12 +1668,10 @@
   }
 
   function applyLineProfile(name, avatar, uid) {
-    // 存到全域
     window.LINE_UID = uid;
     window.LINE_NAME = name;
     window.LINE_AVATAR = avatar;
 
-    // 套入 UI
     document.getElementById("home-name").textContent = name;
     document.getElementById("home-avatar").src = avatar;
     document.getElementById("reg-nickname").value = name;
@@ -1671,7 +1680,48 @@
     const meName = document.getElementById("me-name");
     if (meAvatar) meAvatar.src = avatar;
     if (meName) meName.textContent = name;
+
+    // 載入用戶資料更新首頁副標
+    loadUserProfile(uid);
   };
+
+  async function loadUserProfile(uid) {
+    try {
+      const res = await fetch(GAS_URL + "?action=getConfig");
+      // 從 GAS 讀取用戶資料
+      const r2 = await fetch(GAS_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "getProfile", lineUid: uid })
+      });
+      // no-cors 無法讀回傳，改用 GET
+    } catch(e) {}
+
+    // 直接用 GET 讀用戶資料
+    try {
+      const res = await fetch(GAS_URL + "?action=getProfile&lineUid=" + uid);
+      const data = await res.json();
+      if (data.success && data.profile) {
+        const p = data.profile;
+        const age = p.childBirthday ? Math.floor((new Date() - new Date(p.childBirthday)) / (1000*60*60*24*365.25)) : "";
+        const sub = [p.childName, age ? age+"歲" : "", p.area].filter(Boolean).join("・");
+        const homeSub = document.getElementById("home-sub");
+        if (homeSub && sub) homeSub.textContent = sub;
+
+        const profileName = document.getElementById("profile-name");
+        if (profileName) profileName.textContent = p.nickname || window.LINE_NAME;
+        const profileSub = document.querySelector(".profile-sub");
+        if (profileSub) profileSub.textContent = [p.childName, age ? age+"歲" : "", p.area].filter(Boolean).join("・");
+      } else {
+        const homeSub = document.getElementById("home-sub");
+        if (homeSub) homeSub.textContent = "點下方完成註冊 👇";
+      }
+    } catch(e) {
+      const homeSub = document.getElementById("home-sub");
+      if (homeSub) homeSub.textContent = "";
+    }
+  }
 
   function goTo(pageId) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
