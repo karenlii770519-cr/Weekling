@@ -996,34 +996,11 @@
         </div>
         <div class="card">
           <div class="card-title"><i class="bi bi-emoji-smile" style="color:var(--green)"></i> 個性（可複選）</div>
-          <div class="tag-group" id="tags-personality">
-            <div class="tag-chip" onclick="toggleTag(this)">活潑外向</div>
-            <div class="tag-chip" onclick="toggleTag(this)">文靜內斂</div>
-            <div class="tag-chip" onclick="toggleTag(this)">慢熱但熟了很好</div>
-            <div class="tag-chip" onclick="toggleTag(this)">喜歡當領袖</div>
-            <div class="tag-chip" onclick="toggleTag(this)">跟著別人走也開心</div>
-            <div class="tag-chip" onclick="toggleTag(this)">情緒穩定</div>
-            <div class="tag-chip" onclick="toggleTag(this)">偶爾鬧情緒</div>
-            <div class="tag-chip" onclick="toggleTag(this)">需要適應時間</div>
-            <div class="tag-chip" onclick="toggleTag(this)">精力充沛停不下來</div>
-            <div class="tag-chip" onclick="toggleTag(this)">喜歡靜態活動</div>
-            <div class="tag-chip" onclick="toggleTag(this)">動靜皆宜</div>
-          </div>
+          <div class="tag-group" id="tags-personality"><div style="color:var(--text-sub);font-size:13px">載入中...</div></div>
         </div>
         <div class="card">
           <div class="card-title"><i class="bi bi-controller" style="color:var(--peach)"></i> 喜歡的活動（可複選）</div>
-          <div class="tag-group" id="tags-liked">
-            <div class="tag-chip" onclick="toggleTagPeach(this)">跑跳追逐</div>
-            <div class="tag-chip" onclick="toggleTagPeach(this)">積木／樂高</div>
-            <div class="tag-chip" onclick="toggleTagPeach(this)">畫畫／手作</div>
-            <div class="tag-chip" onclick="toggleTagPeach(this)">角色扮演</div>
-            <div class="tag-chip" onclick="toggleTagPeach(this)">看繪本／說故事</div>
-            <div class="tag-chip" onclick="toggleTagPeach(this)">沙坑／戶外探索</div>
-            <div class="tag-chip" onclick="toggleTagPeach(this)">音樂／律動</div>
-            <div class="tag-chip" onclick="toggleTagPeach(this)">球類運動</div>
-            <div class="tag-chip" onclick="toggleTagPeach(this)">滑步車／騎車</div>
-            <div class="tag-chip" onclick="toggleTagPeach(this)">玩水／感統遊戲</div>
-          </div>
+          <div class="tag-group" id="tags-liked"><div style="color:var(--text-sub);font-size:13px">載入中...</div></div>
         </div>
         <div style="display:flex;gap:10px">
           <button class="btn btn-secondary" style="flex:1" onclick="regNext(1)">上一步</button>
@@ -1592,6 +1569,74 @@
 </div>
 
 <script>
+
+  // ── 動態載入標籤和場所 ──
+  async function loadConfig() {
+    try {
+      const res = await fetch(GAS_URL + "?action=getConfig");
+      const data = await res.json();
+      if (!data.success) return;
+
+      // 渲染個性標籤
+      const pContainer = document.getElementById("tags-personality");
+      pContainer.innerHTML = data.tags.personality.map(tag =>
+        `<div class="tag-chip" onclick="toggleTag(this)">${tag}</div>`
+      ).join("");
+
+      // 渲染活動標籤
+      const aContainer = document.getElementById("tags-liked");
+      aContainer.innerHTML = data.tags.activity.map(tag =>
+        `<div class="tag-chip" onclick="toggleTagPeach(this)">${tag}</div>`
+      ).join("");
+
+      // 渲染場所清單
+      const vContainer = document.getElementById("venue-list");
+      vContainer.innerHTML = data.venues.map((v, i) =>
+        `<div class="venue-option ${i===0?'selected':''}" onclick="toggleVenue(this)" data-id="${v.id}">
+          <div class="venue-icon"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
+          <div class="venue-info">
+            <div class="venue-name">${v.name}</div>
+            <div class="venue-sub">${v.type}・${v.area}</div>
+          </div>
+          <div class="venue-check"><i class="bi bi-check-circle-fill"></i></div>
+        </div>`
+      ).join("");
+
+      // 更新首頁熱門場所（前兩個）
+      const hotContainer = document.getElementById("hot-venues");
+      if (hotContainer && data.venues.length >= 2) {
+        hotContainer.innerHTML = data.venues.slice(0, 2).map(v =>
+          `<div class="venue-card" onclick="goTo('page-find')">
+            <div style="font-size:28px"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
+            <div class="venue-card-name">${v.name}</div>
+            <div class="venue-card-sub">${v.area}</div>
+          </div>`
+        ).join("");
+      }
+
+    } catch(e) {
+      console.log("loadConfig error:", e);
+      // 載入失敗時用預設值
+      loadDefaultTags();
+    }
+  }
+
+  function loadDefaultTags() {
+    const pContainer = document.getElementById("tags-personality");
+    const defaultP = ["活潑外向","文靜內斂","慢熱但熟了很好","情緒穩定","精力充沛停不下來","動靜皆宜"];
+    pContainer.innerHTML = defaultP.map(t => `<div class="tag-chip" onclick="toggleTag(this)">${t}</div>`).join("");
+
+    const aContainer = document.getElementById("tags-liked");
+    const defaultA = ["跑跳追逐","積木／樂高","畫畫／手作","角色扮演","沙坑／戶外探索","球類運動"];
+    aContainer.innerHTML = defaultA.map(t => `<div class="tag-chip" onclick="toggleTagPeach(this)">${t}</div>`).join("");
+  }
+
+  // 頁面載入時執行
+  loadConfig();
+
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbxy2UJWXi_FbXUtmIbrSlXAoBhFJEIzm2rSH2mw4dIlyKYLBRC9Kb-K61MtbEHBj6Fa0Q/exec";
+  const LIFF_ID = "2008649114-wxWy3jJs";
+
   // ── 模擬 LIFF 取得 LINE 資料 ──
   // 真實環境換成：
   // liff.init({liffId}).then(async () => {
