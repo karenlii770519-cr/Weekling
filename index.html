@@ -1141,40 +1141,7 @@
     <div class="scroll-content">
       <div class="card">
         <div class="card-title"><i class="bi bi-geo-alt-fill" style="color:var(--peach)"></i> 選擇場所</div>
-        <div id="venue-list">
-          <div class="venue-option" onclick="selectVenue(this)">
-            <div class="venue-icon"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
-            <div>
-              <div class="venue-name">三井 LaLaport 林口</div>
-              <div class="venue-desc">購物中心・室內・全年齡</div>
-            </div>
-            <div class="venue-check"><i class="bi bi-check-circle-fill"></i></div>
-          </div>
-          <div class="venue-option" onclick="selectVenue(this)">
-            <div class="venue-icon"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
-            <div>
-              <div class="venue-name">林口運動公園</div>
-              <div class="venue-desc">戶外公園・免費・2-6歲</div>
-            </div>
-            <div class="venue-check"><i class="bi bi-check-circle-fill"></i></div>
-          </div>
-          <div class="venue-option" onclick="selectVenue(this)">
-            <div class="venue-icon"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
-            <div>
-              <div class="venue-name">卡多磨兒童職人村</div>
-              <div class="venue-desc">室內遊樂・2-8歲</div>
-            </div>
-            <div class="venue-check"><i class="bi bi-check-circle-fill"></i></div>
-          </div>
-          <div class="venue-option" onclick="selectVenue(this)">
-            <div class="venue-icon"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
-            <div>
-              <div class="venue-name">林口區立圖書館</div>
-              <div class="venue-desc">圖書館・安靜・0-6歲</div>
-            </div>
-            <div class="venue-check"><i class="bi bi-check-circle-fill"></i></div>
-          </div>
-        </div>
+        <div id="find-venue-list"><div style="color:var(--text-sub);font-size:13px;padding:8px">載入中...</div></div>
       </div>
 
       <div class="card">
@@ -1767,6 +1734,14 @@
         `<div class="venue-option ${i===0?'selected':''}" onclick="toggleVenue(this)" data-id="${v.id}">
           <div class="venue-icon"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
           <div class="venue-info"><div class="venue-name">${v.name}</div><div class="venue-sub">${v.type}・${v.area}</div></div>
+          <div class="venue-check"><i class="bi bi-check-circle-fill"></i></div>
+        </div>`).join("");
+
+      const fvContainer = document.getElementById("find-venue-list");
+      if (fvContainer) fvContainer.innerHTML = data.venues.map((v,i) =>
+        `<div class="venue-option" onclick="selectVenue(this)" data-id="${v.id}">
+          <div class="venue-icon"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
+          <div class="venue-info"><div class="venue-name">${v.name}</div><div class="venue-sub">${v.type}・${v.area}・${v.ageRange}</div></div>
           <div class="venue-check"><i class="bi bi-check-circle-fill"></i></div>
         </div>`).join("");
 
