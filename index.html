@@ -63,7 +63,7 @@
     min-height: 100vh;
     background: var(--bg);
     position: relative;
-    overflow: hidden;
+    overflow-x: hidden;
     box-shadow: 0 0 80px rgba(0,0,0,0.18);
   }
 
@@ -880,6 +880,7 @@
 </style>
 </head>
 <body>
+<div style="display:flex;justify-content:center;min-height:100vh;background:#e8e8e8">
 <div class="phone">
 
   <!-- ════ SPLASH ════ -->
@@ -1409,7 +1410,7 @@
         <div class="menu-arrow">›</div>
       </div>
       <div class="menu-item">
-        <div class="menu-icon" style="background:var(--yellow-light)">⏸️</div>
+        <div class="menu-icon" style="background:var(--yellow-light)"><i class="bi bi-pause-circle-fill" style="color:#E1A000"></i></div>
         <div class="menu-label">暫停配對</div>
         <div class="menu-arrow">›</div>
       </div>
@@ -1543,8 +1544,9 @@
 
     } catch(e) {
       console.log("loadConfig error:", e);
-      // 載入失敗時用預設值
       loadDefaultTags();
+      const hotContainer = document.getElementById("hot-venues");
+      if (hotContainer) hotContainer.innerHTML = '<div style="color:var(--text-sub);font-size:13px">場所載入失敗，請重新整理</div>';
     }
   }
 
@@ -1733,5 +1735,6 @@
     window.scrollTo(0, 0);
   }
 </script>
+</div>
 </body>
 </html>
