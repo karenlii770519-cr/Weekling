@@ -1611,6 +1611,33 @@
         if (profileName) profileName.textContent = p.nickname || window.LINE_NAME;
         const profileSub = document.getElementById("profile-sub");
         if (profileSub) profileSub.textContent = [p.childName, age ? age+"歲" : p.childGender, p.area].filter(Boolean).join("・");
+
+        // 預填登記表單
+        window.EXISTING_PROFILE = p;
+        const setVal = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+        setVal("reg-nickname", p.nickname || window.LINE_NAME);
+        setVal("reg-area", p.area);
+        setVal("reg-childname", p.childName);
+        setVal("reg-birthday", p.childBirthday ? p.childBirthday.split("T")[0] : "");
+        setVal("reg-gender", p.childGender);
+        setVal("reg-kindergarten", p.kindergarten);
+        setVal("reg-zodiac", p.zodiac);
+        setVal("reg-parentintro", p.parentIntro);
+        // 預選標籤
+        if (p.personality) {
+          p.personality.split("、").forEach(tag => {
+            document.querySelectorAll("#tags-personality .tag-chip").forEach(el => {
+              if (el.textContent.trim() === tag) el.classList.add("selected");
+            });
+          });
+        }
+        if (p.likedActivities) {
+          p.likedActivities.split("、").forEach(tag => {
+            document.querySelectorAll("#tags-liked .tag-chip").forEach(el => {
+              if (el.textContent.trim() === tag) el.classList.add("selected");
+            });
+          });
+        }
       } else {
         const homeSub = document.getElementById("home-sub");
         if (homeSub) homeSub.textContent = "點下方完成登記 ↓";
