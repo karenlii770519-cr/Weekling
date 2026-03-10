@@ -367,7 +367,7 @@
   #page-splash {
     background-image: url('images/bg.png');
     background-size: cover;
-    background-position: center top;
+    background-position: center calc(top - 20px);
     background-repeat: no-repeat;
     background-color: #9ebd55;
     justify-content: space-between;
@@ -1216,18 +1216,8 @@
       </div>
 
       <div class="card">
-        <div class="card-title"><i class="bi bi-clipboard2-check-fill" style="color:var(--sky)"></i> 約定詳情</div>
+        <div class="card-title"><i class="bi bi-clipboard2-check-fill" style="color:var(--sky)"></i> 配對資訊</div>
         <div style="display:flex;flex-direction:column;gap:10px;font-size:14px">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="color:var(--text-sub)"><i class="bi bi-geo-alt-fill"></i> 場所</span>
-            <span style="font-weight:700" id="confirm-venue">-</span>
-          </div>
-          <div class="divider" style="margin:2px 0"></div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="color:var(--text-sub)"><i class="bi bi-calendar-week"></i> 時段</span>
-            <span style="font-weight:700" id="confirm-time">-</span>
-          </div>
-          <div class="divider" style="margin:2px 0"></div>
           <div style="display:flex;justify-content:space-between;align-items:center">
             <span style="color:var(--text-sub)"><i class="bi bi-person-fill"></i> 小孩</span>
             <span style="font-weight:700" id="confirm-kids">...</span>
@@ -1303,18 +1293,8 @@
 
       <!-- 約定詳情 -->
       <div class="card">
-        <div class="card-title"><i class="bi bi-clipboard2-check-fill" style="color:var(--sky)"></i> 約定詳情</div>
+        <div class="card-title"><i class="bi bi-clipboard2-check-fill" style="color:var(--sky)"></i> 配對資訊</div>
         <div style="display:flex;flex-direction:column;gap:10px;font-size:14px">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="color:var(--text-sub)"><i class="bi bi-geo-alt-fill"></i> 場所</span>
-            <span style="font-weight:700" id="confirm-venue">-</span>
-          </div>
-          <div class="divider" style="margin:2px 0"></div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="color:var(--text-sub)"><i class="bi bi-calendar-week"></i> 時段</span>
-            <span style="font-weight:700" id="confirm-time">-</span>
-          </div>
-          <div class="divider" style="margin:2px 0"></div>
           <div style="display:flex;justify-content:space-between;align-items:center">
             <span style="color:var(--text-sub)"><i class="bi bi-person-fill"></i> 小孩</span>
             <span style="font-weight:700" id="confirm-kids">...</span>
@@ -1432,12 +1412,12 @@
       </div>
       <div class="form-group">
         <label class="form-label">場所名稱<span>*</span></label>
-        <input class="form-input" placeholder="例：林口森林公園" />
+        <input class="form-input" id="venue-name" placeholder="例：林口森林公園" />
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div class="form-group">
           <label class="form-label">類型<span>*</span></label>
-          <select class="form-select">
+          <select class="form-select" id="venue-type">
             <option>親子餐廳</option>
             <option>室內遊樂</option>
             <option>戶外公園</option>
@@ -1447,26 +1427,27 @@
         </div>
         <div class="form-group">
           <label class="form-label">地區<span>*</span></label>
-          <select class="form-select">
+          <select class="form-select" id="venue-area">
             <option>林口區</option>
             <option>泰山區</option>
             <option>新莊區</option>
+            <option>蘆竹區</option>
           </select>
         </div>
       </div>
       <div class="form-group">
         <label class="form-label">地址<span>*</span></label>
-        <input class="form-input" placeholder="填完整地址" />
+        <input class="form-input" id="venue-address" placeholder="填完整地址" />
       </div>
       <div class="form-group">
         <label class="form-label">適合年齡</label>
-        <input class="form-input" placeholder="例：1-6歲" />
+        <input class="form-input" id="venue-age" placeholder="例：1-6歲" />
       </div>
       <div class="form-group">
         <label class="form-label">推薦理由<span>*</span></label>
-        <textarea class="form-textarea" placeholder="為什麼推薦這個地方？有什麼特別適合小孩的地方？"></textarea>
+        <textarea class="form-textarea" id="venue-reason" placeholder="為什麼推薦這個地方？有什麼特別適合小孩的地方？"></textarea>
       </div>
-      <button class="btn btn-peach" onclick="alert('申請已送出！審核通過後會通知你！')">送出申請</button>
+      <button class="btn btn-peach" id="venue-submit-btn" onclick="submitVenueRequest()">送出申請</button>
     </div>
   </div>
 
@@ -1541,7 +1522,7 @@
   // 頁面載入時執行
   loadConfig();
 
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbyJEA-h8xK8u8ChNbZrDnC2AT3biU-4AY-lcVtPT8GJ3yrF30sFhV2_kSipGAd6GpX8/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwQcAyR3AnsAmFpjq2yNT2LnHjPwmxKUi1GWNuGZGZq2i5cxQONlBeM5tr0OYgFKubO/exec";
   const LIFF_ID = "2008649114-wxWy3jJs";
 
   // 常數定義完後才初始化
@@ -1887,17 +1868,22 @@
   window.currentMatch = null;
   function inviteMatch(toUid, nickname, childName, childAge, childGender) {
     window.currentMatch = { toUid, nickname, childName, childAge, childGender };
+    // 備援：從 home-sub 讀取（格式：「小孩名・N歲・地區」）
+    if (!window.MY_CHILD_NAME) {
+      const homeSub = document.getElementById('home-sub');
+      if (homeSub) window.MY_CHILD_NAME = (homeSub.textContent || '').split('・')[0] || '';
+    }
     const myChildName = window.MY_CHILD_NAME || '';
     const myAge = window.MY_CHILD_AGE || '';
-    // 更新確認頁
     document.getElementById('confirm-title').textContent = '邀請 ' + nickname + ' 一起玩';
-    document.getElementById('confirm-kids').textContent =
-      (myChildName || '我的孩子') + (myAge ? '（' + myAge + '歲）' : '') +
-      ' × ' + (childName || '小朋友') + (childAge ? '（' + childAge + '歲）' : '');
+    const kidsEl = document.getElementById('confirm-kids');
+    if (kidsEl) {
+      const myPart = myChildName ? myChildName + (myAge ? '（' + myAge + '歲）' : '') : '我的孩子';
+      const theirPart = (childName || '小朋友') + (childAge ? '（' + childAge + '歲）' : '');
+      kidsEl.textContent = myPart + ' × ' + theirPart;
+    }
     const myAvatar = document.getElementById('confirm-my-avatar');
     if (myAvatar && window.LINE_AVATAR) myAvatar.src = window.LINE_AVATAR;
-    document.getElementById('confirm-venue').textContent = '－';
-    document.getElementById('confirm-time').textContent = '－';
     goTo('page-confirm');
   }
 
@@ -1920,6 +1906,37 @@
       });
     } catch(e) {}
     goTo('page-sent');
+  }
+
+  async function submitVenueRequest() {
+    const name = document.getElementById('venue-name')?.value.trim();
+    const reason = document.getElementById('venue-reason')?.value.trim();
+    if (!name || !reason) { alert('請填寫場所名稱和推薦理由'); return; }
+    const btn = document.getElementById('venue-submit-btn');
+    btn.textContent = '送出中...'; btn.disabled = true;
+    try {
+      await fetch(GAS_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'submitVenue',
+          data: {
+            lineUid: window.LINE_UID || '',
+            venueName: name,
+            type: document.getElementById('venue-type')?.value || '',
+            area: document.getElementById('venue-area')?.value || '',
+            address: document.getElementById('venue-address')?.value || '',
+            ageRange: document.getElementById('venue-age')?.value || '',
+            reason: reason
+          }
+        })
+      });
+      alert('申請已送出！審核通過後會出現在場所清單 🎉');
+      goTo('page-home');
+    } catch(e) {
+      alert('送出失敗，請稍後再試');
+    }
+    btn.textContent = '送出申請'; btn.disabled = false;
   }
 
   // ── 暫停配對 ──
