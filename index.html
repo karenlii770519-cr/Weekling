@@ -1542,7 +1542,7 @@
   // 頁面載入時執行
   loadConfig();
 
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbwQcAyR3AnsAmFpjq2yNT2LnHjPwmxKUi1GWNuGZGZq2i5cxQONlBeM5tr0OYgFKubO/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbzLs9O15jtmaWGZT01Ug2ojCnvTRK2qc8X26TS0pZiEhQfBZa-Wekw0OTJWOBzS1hr2/exec";
   const LIFF_ID = "2008649114-wxWy3jJs";
 
   // 常數定義完後才初始化
@@ -1623,20 +1623,26 @@
         setVal("reg-kindergarten", p.kindergarten);
         setVal("reg-zodiac", p.zodiac);
         setVal("reg-parentintro", p.parentIntro);
-        // 預選標籤
-        if (p.personality) {
-          p.personality.split("、").forEach(tag => {
-            document.querySelectorAll("#tags-personality .tag-chip").forEach(el => {
-              if (el.textContent.trim() === tag) el.classList.add("selected");
+        // 預選標籤：等 loadConfig 建完 chip 後再執行
+        window.PREFILL_TAGS = () => {
+          if (p.personality) {
+            p.personality.split("、").forEach(tag => {
+              document.querySelectorAll("#tags-personality .tag-chip").forEach(el => {
+                if (el.textContent.trim() === tag) el.classList.add("selected");
+              });
             });
-          });
-        }
-        if (p.likedActivities) {
-          p.likedActivities.split("、").forEach(tag => {
-            document.querySelectorAll("#tags-liked .tag-chip").forEach(el => {
-              if (el.textContent.trim() === tag) el.classList.add("selected");
+          }
+          if (p.likedActivities) {
+            p.likedActivities.split("、").forEach(tag => {
+              document.querySelectorAll("#tags-liked .tag-chip").forEach(el => {
+                if (el.textContent.trim() === tag) el.classList.add("selected");
+              });
             });
-          });
+          }
+        };
+        // 若 tag-chip 已存在就直接執行
+        if (document.querySelectorAll("#tags-personality .tag-chip").length > 0) {
+          window.PREFILL_TAGS();
         }
       } else {
         const homeSub = document.getElementById("home-sub");
@@ -1867,6 +1873,7 @@
           </div>
           ${m.personality?`<div class="match-tags">${m.personality.split('、').map(t=>`<span class="badge badge-purple">${t}</span>`).join('')}</div>`:''}
           ${m.likedActivities?`<div class="match-info-row">${m.likedActivities.split('、').map(t=>`<span class="badge badge-peach">${t}</span>`).join('')}</div>`:''}
+          ${m.commonSlots&&m.commonSlots.length>0?`<div style="margin:6px 0 8px;font-size:12px;color:var(--green);font-weight:600"><i class="bi bi-calendar-check-fill"></i> 都有空：${m.commonSlots.join('、')}</div>`:`<div style="margin:6px 0 8px;font-size:12px;color:var(--text-sub)"><i class="bi bi-calendar-x"></i> 尚未填寫共同時段</div>`}
           ${m.parentIntro?`<div class="match-intro"><i class="bi bi-chat-quote-fill" style="color:var(--sky)"></i>「${m.parentIntro}」</div>`:''}
           <button class="btn btn-primary" onclick="inviteMatch('${m.lineUid}','${m.nickname}','${m.childName||""}',${ m.childAge||0},'${m.childGender||""}')"><i class="bi bi-send-fill"></i> 邀請約玩</button>
         </div>`).join('');
