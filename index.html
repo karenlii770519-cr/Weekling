@@ -389,7 +389,7 @@
     justify-content: center;
     padding: 0 20px;
     margin-top: 20px;
-    transform: translateY(-7%);
+    transform: translateY(-12%);
   }
   .splash-logo {
     width: 95%;
@@ -414,16 +414,16 @@
   /* ── SPLASH TAGLINE ── */
   .splash-tagline {
     font-family: 'GenSenRounded', 'Noto Sans TC', sans-serif;
-    font-size: 16px;
+    font-size: 12px;
     font-weight: 500;
     color: rgba(255,255,255,0.95);
     letter-spacing: 1px;
     text-shadow: 0 1px 8px rgba(77,125,153,0.4);
-    margin-bottom: 4px;
+    margin-bottom: 3px;
   }
   .splash-tagline-sub {
     font-family: 'GenSenRounded', 'Noto Sans TC', sans-serif;
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 400;
     color: rgba(255,255,255,0.75);
     letter-spacing: 0.8px;
@@ -907,6 +907,10 @@
     <button class="btn btn-primary splash-btn" onclick="goTo('page-register')">馬上登記</button>
     <div style="height:12px"></div>
     <button class="btn btn-secondary splash-btn" onclick="goTo('page-mypage')">我的資料</button>
+    <div style="margin-top:14px;font-size:9px;color:rgba(255,255,255,0.6);line-height:2;letter-spacing:0.3px;text-align:center">
+      <div>※ 資料僅用於玩伴配對，不作其他用途 ※ 不分享給第三方，不對外販售</div>
+      <div>※ 本平台為非營利性質 ※ 依兒少法規範保護所有兒童個人資訊</div>
+    </div>
   </div>
   </div>
 
@@ -1203,11 +1207,11 @@
     <div class="scroll-content">
       <div class="confirm-hero">
         <div style="display:flex;justify-content:center;align-items:center;gap:16px;margin-bottom:16px">
-          <img src="https://i.pravatar.cc/96?img=47" style="width:56px;height:56px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.15)" />
+          <img id="confirm-my-avatar" src="" style="width:56px;height:56px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.15);background:#eee" />
           <div style="font-size:44px;color:var(--green)"><i class="bi bi-envelope-heart-fill"></i></div>
-          <img src="https://i.pravatar.cc/96?img=23" style="width:56px;height:56px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.15)" />
+          <div id="confirm-their-avatar" style="width:56px;height:56px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.15);background:#e0f7f4;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--sky)"><i class="bi bi-person-circle"></i></div>
         </div>
-        <div class="confirm-title">邀請李小花一起玩</div>
+        <div class="confirm-title" id="confirm-title">確認送出邀請</div>
         <div class="confirm-sub">送出後對方會收到 LINE 通知<br>48 小時內雙方確認才算成立</div>
       </div>
 
@@ -1216,17 +1220,17 @@
         <div style="display:flex;flex-direction:column;gap:10px;font-size:14px">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <span style="color:var(--text-sub)"><i class="bi bi-geo-alt-fill"></i> 場所</span>
-            <span style="font-weight:700">三井 LaLaport 林口</span>
+            <span style="font-weight:700" id="confirm-venue">-</span>
           </div>
           <div class="divider" style="margin:2px 0"></div>
           <div style="display:flex;justify-content:space-between;align-items:center">
             <span style="color:var(--text-sub)"><i class="bi bi-calendar-week"></i> 時段</span>
-            <span style="font-weight:700">這週六下午 1–5</span>
+            <span style="font-weight:700" id="confirm-time">-</span>
           </div>
           <div class="divider" style="margin:2px 0"></div>
           <div style="display:flex;justify-content:space-between;align-items:center">
             <span style="color:var(--text-sub)"><i class="bi bi-person-fill"></i> 小孩</span>
-            <span style="font-weight:700">小明（3歲）× 小花（4歲）</span>
+            <span style="font-weight:700" id="confirm-kids">...</span>
           </div>
         </div>
       </div>
@@ -1237,7 +1241,7 @@
 
       <div style="display:flex;gap:10px">
         <button class="btn btn-secondary" style="flex:1" onclick="goTo('page-results')">返回</button>
-        <button class="btn btn-primary" style="flex:2" onclick="goTo('page-sent')"><i class="bi bi-send-fill"></i> 送出邀請</button>
+        <button class="btn btn-primary" style="flex:2" onclick="sendInvite()"><i class="bi bi-send-fill"></i> 送出邀請</button>
       </div>
     </div>
   </div>
@@ -1248,12 +1252,9 @@
       <div style="font-size:64px;margin-bottom:20px;animation:bounce 2s ease infinite;color:var(--green)"><i class="bi bi-envelope-check-fill"></i></div>
       <div style="font-family:'Nunito',sans-serif;font-size:26px;font-weight:900;margin-bottom:10px">邀請已送出！</div>
       <div style="font-size:14px;color:var(--text-sub);line-height:1.8;margin-bottom:32px">
-        李小花媽媽收到通知後<br>會在 48 小時內回覆<br>
+        對方收到通知後<br>會在 48 小時內回覆<br>
         <span style="color:var(--green);font-weight:600">確認後你會收到 LINE 通知</span>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-bottom:12px" onclick="goTo('page-incoming')">
-        <i class="bi bi-eye-fill"></i> 模擬對方收到邀請的畫面
-      </button>
       <button class="btn btn-secondary" style="width:100%" onclick="goTo('page-home')">回到首頁</button>
     </div>
   </div>
@@ -1306,17 +1307,17 @@
         <div style="display:flex;flex-direction:column;gap:10px;font-size:14px">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <span style="color:var(--text-sub)"><i class="bi bi-geo-alt-fill"></i> 場所</span>
-            <span style="font-weight:700">三井 LaLaport 林口</span>
+            <span style="font-weight:700" id="confirm-venue">-</span>
           </div>
           <div class="divider" style="margin:2px 0"></div>
           <div style="display:flex;justify-content:space-between;align-items:center">
             <span style="color:var(--text-sub)"><i class="bi bi-calendar-week"></i> 時段</span>
-            <span style="font-weight:700">這週六下午 1–5</span>
+            <span style="font-weight:700" id="confirm-time">-</span>
           </div>
           <div class="divider" style="margin:2px 0"></div>
           <div style="display:flex;justify-content:space-between;align-items:center">
             <span style="color:var(--text-sub)"><i class="bi bi-person-fill"></i> 小孩</span>
-            <span style="font-weight:700">小明（3歲）× 小花（4歲）</span>
+            <span style="font-weight:700" id="confirm-kids">...</span>
           </div>
         </div>
       </div>
@@ -1342,15 +1343,13 @@
     <div style="display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:16px">
       <img src="https://i.pravatar.cc/96?img=47" style="width:64px;height:64px;border-radius:50%;border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,0.12)" />
       <div style="font-size:44px;color:#32E1C8"><i class="bi bi-stars"></i></div>
-      <img src="https://i.pravatar.cc/96?img=23" style="width:64px;height:64px;border-radius:50%;border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,0.12)" />
+      <div style="width:64px;height:64px;border-radius:50%;border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,0.12);background:#e0f7f4;display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--sky)"><i class="bi bi-person-circle"></i></div>
     </div>
     <div class="success-title">邀請已送出！</div>
-    <div class="success-sub">李小花媽媽收到通知後<br>會在 48 小時內回覆</div>
-    <div class="icebreaker-box">
+    <div class="success-sub" id="sent-sub">對方收到通知後<br>會在 48 小時內回覆</div>
+    <div class="icebreaker-box" id="sent-icebreaker" style="display:none">
       <div class="icebreaker-title"><i class="bi bi-lightbulb-fill"></i> 破冰小提示</div>
       <div class="icebreaker-row">
-        <i class="bi bi-heart-fill" style="color:var(--peach)"></i> 小花喜歡「畫畫、角色扮演」<br>
-        <i class="bi bi-emoji-smile" style="color:var(--green)"></i> 個性文靜，慢熱，需要時間暖機<br>
         <i class="bi bi-geo-alt-fill" style="color:var(--sky)"></i> 建議在場所門口碰面，讓小孩自己探索<br>
         <i class="bi bi-clock" style="color:var(--text-sub)"></i> 玩個 1 小時就很足夠，輕鬆就好
       </div>
@@ -1402,12 +1401,12 @@
         <div class="menu-label">推薦新場所</div>
         <div class="menu-arrow">›</div>
       </div>
-      <div class="menu-item">
+      <div class="menu-item" onclick="togglePause()">
         <div class="menu-icon" style="background:var(--yellow-light)"><i class="bi bi-pause-circle-fill" style="color:#E1A000"></i></div>
-        <div class="menu-label">暫停配對</div>
+        <div class="menu-label" id="pause-label">暫停配對</div>
         <div class="menu-arrow">›</div>
       </div>
-      <div class="menu-item">
+      <div class="menu-item" onclick="goTo('page-faq')">
         <div class="menu-icon" style="background:var(--peach-light)"><i class="bi bi-question-circle-fill" style="color:var(--peach)"></i></div>
         <div class="menu-label">常見問題</div>
         <div class="menu-arrow">›</div>
@@ -1542,7 +1541,7 @@
   // 頁面載入時執行
   loadConfig();
 
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbwC8CZV2cBdkjuQPUuoBCGpr8Gap9HO057FyrxUKq9eWwuD8ONxtbvz2YQawKfaJTak/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwQcAyR3AnsAmFpjq2yNT2LnHjPwmxKUi1GWNuGZGZq2i5cxQONlBeM5tr0OYgFKubO/exec";
   const LIFF_ID = "2008649114-wxWy3jJs";
 
   // 常數定義完後才初始化
@@ -1602,6 +1601,8 @@
         const p = data.profile;
         const age = p.childBirthday ? Math.floor((new Date() - new Date(p.childBirthday)) / (1000*60*60*24*365.25)) : "";
         const sub = [p.childName, age ? age+"歲" : "", p.area].filter(Boolean).join("・");
+        window.MY_CHILD_NAME = p.childName || "";
+        window.MY_CHILD_AGE = age || "";
         const homeSub = document.getElementById("home-sub");
         if (homeSub && sub) homeSub.textContent = sub;
 
@@ -1839,7 +1840,7 @@
           ${m.personality?`<div class="match-tags">${m.personality.split('、').map(t=>`<span class="badge badge-purple">${t}</span>`).join('')}</div>`:''}
           ${m.likedActivities?`<div class="match-info-row">${m.likedActivities.split('、').map(t=>`<span class="badge badge-peach">${t}</span>`).join('')}</div>`:''}
           ${m.parentIntro?`<div class="match-intro"><i class="bi bi-chat-quote-fill" style="color:var(--sky)"></i>「${m.parentIntro}」</div>`:''}
-          <button class="btn btn-primary" onclick="goTo('page-confirm')"><i class="bi bi-send-fill"></i> 邀請約玩</button>
+          <button class="btn btn-primary" onclick="inviteMatch('${m.lineUid}','${m.nickname}','${m.childName||""}',${ m.childAge||0},'${m.childGender||""}')"><i class="bi bi-send-fill"></i> 邀請約玩</button>
         </div>`).join('');
     } catch(e) {
       document.getElementById('results-title').textContent = '載入失敗';
@@ -1880,6 +1881,62 @@
       alert("網路錯誤："+e);
       btn.textContent = "完成登記"; btn.disabled = false;
     }
+  }
+
+  // ── 邀請約玩 ──
+  window.currentMatch = null;
+  function inviteMatch(toUid, nickname, childName, childAge, childGender) {
+    window.currentMatch = { toUid, nickname, childName, childAge, childGender };
+    const myChildName = window.MY_CHILD_NAME || '';
+    const myAge = window.MY_CHILD_AGE || '';
+    // 更新確認頁
+    document.getElementById('confirm-title').textContent = '邀請 ' + nickname + ' 一起玩';
+    document.getElementById('confirm-kids').textContent =
+      (myChildName || '我的孩子') + (myAge ? '（' + myAge + '歲）' : '') +
+      ' × ' + (childName || '小朋友') + (childAge ? '（' + childAge + '歲）' : '');
+    const myAvatar = document.getElementById('confirm-my-avatar');
+    if (myAvatar && window.LINE_AVATAR) myAvatar.src = window.LINE_AVATAR;
+    document.getElementById('confirm-venue').textContent = '－';
+    document.getElementById('confirm-time').textContent = '－';
+    goTo('page-confirm');
+  }
+
+  async function sendInvite() {
+    const m = window.currentMatch;
+    if (!m) { goTo('page-sent'); return; }
+    // 更新 sent 頁文字
+    const sub = document.getElementById('sent-sub');
+    if (sub) sub.innerHTML = m.nickname + ' 收到通知後<br>會在 48 小時內回覆';
+    // 送出到 GAS（no-cors，不讀回應）
+    try {
+      await fetch(GAS_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'createMatch',
+          fromUid: window.LINE_UID,
+          toUid: m.toUid
+        })
+      });
+    } catch(e) {}
+    goTo('page-sent');
+  }
+
+  // ── 暫停配對 ──
+  async function togglePause() {
+    if (!window.LINE_UID) return;
+    const label = document.getElementById('pause-label');
+    const isPaused = label.textContent === '恢復配對';
+    const newStatus = isPaused ? '啟用' : '暫停';
+    try {
+      await fetch(GAS_URL, {
+        method: "POST", mode: "no-cors",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ action: "updateStatus", lineUid: window.LINE_UID, status: newStatus })
+      });
+      label.textContent = isPaused ? '暫停配對' : '恢復配對';
+      alert(isPaused ? '配對已恢復！' : '配對已暫停，不會出現在搜尋結果中。');
+    } catch(e) { alert('操作失敗，請稍後再試'); }
   }
 
 </script>
