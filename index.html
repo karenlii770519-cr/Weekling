@@ -1512,6 +1512,620 @@
 
 </div>
 
+<script>
+
+  // ── 動態載入標籤和場所 ──
+  async function loadConfig() {
+    try {
+      const res = await fetch(GAS_URL);
+      const data = await res.json();
+      if (!data.success) return;
+
+      // 渲染個性標籤
+      const pContainer = document.getElementById("tags-personality");
+      pContainer.innerHTML = data.tags.personality.map(tag =>
+        `<div class="tag-chip" onclick="toggleTag(this)">${tag}</div>`
+      ).join("");
+
+      // 渲染活動標籤
+      const aContainer = document.getElementById("tags-liked");
+      aContainer.innerHTML = data.tags.activity.map(tag =>
+        `<div class="tag-chip" onclick="toggleTagPeach(this)">${tag}</div>`
+      ).join("");
+
+      // 渲染場所清單
+      const vContainer = document.getElementById("venue-list");
+      vContainer.innerHTML = data.venues.map((v, i) =>
+        `<div class="venue-option ${i===0?'selected':''}" onclick="toggleVenue(this)" data-id="${v.id}">
+          <div class="venue-icon"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
+          <div class="venue-info">
+            <div class="venue-name">${v.name}</div>
+            <div class="venue-sub">${v.type}・${v.area}</div>
+          </div>
+          <div class="venue-check"><i class="bi bi-check-circle-fill"></i></div>
+        </div>`
+      ).join("");
+
+      // 更新首頁熱門場所
+      const hotContainer = document.getElementById("hot-venues");
+      if (hotContainer && data.venues.length > 0) {
+        hotContainer.innerHTML = data.venues.slice(0, 3).map((v, i) =>
+          `${i > 0 ? '<div class="divider" style="margin:4px 0"></div>' : ''}
+          <div style="display:flex;align-items:center;gap:12px" onclick="goTo('page-find')" style="cursor:pointer">
+            <div style="font-size:28px"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
+            <div>
+              <div style="font-weight:700;font-size:13px">${v.name}</div>
+              <div style="font-size:11px;color:var(--text-sub)">${v.type}・${v.ageRange}</div>
+            </div>
+          </div>`
+        ).join("");
+      }
+
+    } catch(e) {
+      console.log("loadConfig error:", e);
+      // 載入失敗時用預設值
+      loadDefaultTags();
+    }
+    // 預填標籤（若 profile 已載入）
+    if (window.PREFILL_TAGS) { window.PREFILL_TAGS(); window.PREFILL_TAGS = null; }
+  }
+
+  function loadDefaultTags() {
+    const pContainer = document.getElementById("tags-personality");
+    const defaultP = ["活潑外向","文靜內斂","慢熱但熟了很好","情緒穩定","精力充沛停不下來","動靜皆宜"];
+    pContainer.innerHTML = defaultP.map(t => `<div class="tag-chip" onclick="toggleTag(this)">${t}</div>`).join("");
+
+    const aContainer = document.getElementById("tags-liked");
+    const defaultA = ["跑跳追逐","積木／樂高","畫畫／手作","角色扮演","沙坑／戶外探索","球類運動"];
+    aContainer.innerHTML = defaultA.map(t => `<div class="tag-chip" onclick="toggleTagPeach(this)">${t}</div>`).join("");
+  }
+
+  // 頁面載入時執行
+  loadConfig();
+
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbxdF8ZN8O2SHJM0TkalaThd_OeqXlyk4QcjizkG98K9lhX35Lfrb2smr598ZVuKRZty/exec";
+  const LIFF_ID = "2008649114-wxWy3jJs";
+
+  // 常數定義完後才初始化
+  initLiff();
+
+  // ── LIFF 初始化（背景連線，不強制登入）──
+  async function initLiff() {
+    try {
+      await liff.init({ liffId: LIFF_ID });
+      if (liff.isLoggedIn()) {
+        const profile = await liff.getProfile();
+        applyLineProfile(profile.displayName, profile.pictureUrl, profile.userId);
+      } else {
+        liff.login();
+      }
+    } catch (err) {
+      console.error("LIFF 背景連線失敗", err);
+    }
+  }
+
+  function applyLineProfile(name, avatar, uid) {
+    window.LINE_UID = uid;
+    window.LINE_NAME = name;
+    window.LINE_AVATAR = avatar;
+
+    document.getElementById("home-name").textContent = name;
+    document.getElementById("home-avatar").src = avatar;
+    document.getElementById("reg-nickname").value = name;
+
+    const meAvatar = document.getElementById("profile-avatar");
+    const meName = document.getElementById("profile-name");
+    if (meAvatar) meAvatar.src = avatar;
+    if (meName) meName.textContent = name;
+
+    // 載入用戶資料更新首頁副標
+    loadUserProfile(uid);
+  };
+
+  async function loadUserProfile(uid) {
+    try {
+      const res = await fetch(GAS_URL + "?action=getConfig");
+      // 從 GAS 讀取用戶資料
+      const r2 = await fetch(GAS_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "getProfile", lineUid: uid })
+      });
+      // no-cors 無法讀回傳，改用 GET
+    } catch(e) {}
+
+    // 直接用 GET 讀用戶資料
+    try {
+      const res = await fetch(GAS_URL + "?action=getProfile&lineUid=" + uid);
+      const data = await res.json();
+      if (data.success && data.profile) {
+        const p = data.profile;
+        const age = p.childBirthday ? Math.floor((new Date() - new Date(p.childBirthday)) / (1000*60*60*24*365.25)) : "";
+        const sub = [p.childName, age ? age+"歲" : "", p.area].filter(Boolean).join("・");
+        window.MY_CHILD_NAME = p.childName || "";
+        window.MY_CHILD_AGE = age || "";
+        const homeSub = document.getElementById("home-sub");
+        if (homeSub && sub) homeSub.textContent = sub;
+
+        const profileName = document.getElementById("profile-name");
+        if (profileName) profileName.textContent = p.nickname || window.LINE_NAME;
+        const profileSub = document.getElementById("profile-sub");
+        if (profileSub) profileSub.textContent = [p.childName, age ? age+"歲" : p.childGender, p.area].filter(Boolean).join("・");
+
+        // 預填登記表單
+        window.EXISTING_PROFILE = p;
+        const setVal = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+        setVal("reg-nickname", p.nickname || window.LINE_NAME);
+        setVal("reg-area", p.area);
+        setVal("reg-childname", p.childName);
+        setVal("reg-birthday", p.childBirthday ? p.childBirthday.split("T")[0] : "");
+        setVal("reg-gender", p.childGender);
+        setVal("reg-kindergarten", p.kindergarten);
+        setVal("reg-zodiac", p.zodiac);
+        setVal("reg-parentintro", p.parentIntro);
+        // 預選標籤：等 loadConfig 建完 chip 後再執行，同時 setTimeout 保險
+        setTimeout(() => { if (window.PREFILL_TAGS) { window.PREFILL_TAGS(); window.PREFILL_TAGS = null; } }, 1500);
+        window.PREFILL_TAGS = () => {
+          if (p.personality) {
+            p.personality.split("、").forEach(tag => {
+              document.querySelectorAll("#tags-personality .tag-chip").forEach(el => {
+                if (el.textContent.trim() === tag) el.classList.add("selected");
+              });
+            });
+          }
+          if (p.likedActivities) {
+            p.likedActivities.split("、").forEach(tag => {
+              document.querySelectorAll("#tags-liked .tag-chip").forEach(el => {
+                if (el.textContent.trim() === tag) el.classList.add("selected");
+              });
+            });
+          }
+        };
+        // 若 tag-chip 已存在就直接執行
+        if (document.querySelectorAll("#tags-personality .tag-chip").length > 0) {
+          window.PREFILL_TAGS();
+        }
+      } else {
+        const homeSub = document.getElementById("home-sub");
+        if (homeSub) homeSub.textContent = "點下方完成登記 ↓";
+      }
+    } catch(e) {
+      const homeSub = document.getElementById("home-sub");
+      if (homeSub) homeSub.textContent = "";
+    }
+  }
+
+  function goTo(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById(pageId);
+    if (target) {
+      target.classList.add('active');
+      target.scrollTop = 0;
+    }
+    // 重新套用 LINE 資料
+    if (window.LINE_NAME) {
+      applyLineProfile(window.LINE_NAME, window.LINE_AVATAR, window.LINE_UID);
+    }
+  }
+
+  function toggleTag(el) {
+    el.classList.toggle('selected');
+  }
+
+  function toggleTagPeach(el) {
+    el.classList.toggle('selected-peach');
+  }
+
+  function toggleSlot(el) {
+    el.classList.toggle('selected');
+  }
+
+  function selectVenue(el) {
+    el.classList.toggle('selected');
+  }
+
+
+  // ── 註冊送出 ──
+  async function submitRegister() {
+    const btn = document.querySelector('#reg-step3 .btn-primary');
+    btn.textContent = "送出中...";
+    btn.disabled = true;
+
+    // 收集個性標籤
+    const personalityTags = [...document.querySelectorAll('#tags-personality .tag-chip.selected')].map(el => el.textContent);
+    // 收集活動標籤
+    const likedActivities = [...document.querySelectorAll('#tags-liked .tag-chip.selected')].map(el => el.textContent);
+    // 收集場所
+    const preferVenues = [...document.querySelectorAll('#venue-list .venue-option.selected')].map(el => el.dataset.id).join(",");
+
+    const data = {
+      lineUid:         window.LINE_UID || "U_MOCK_001",
+      nickname:        document.getElementById("reg-nickname")?.value || window.LINE_NAME || "",
+      phone:           "",
+      area:            document.getElementById("reg-area")?.value || "",
+      childName:       document.getElementById("reg-childname")?.value || "",
+      childBirthday:   document.getElementById("reg-birthday")?.value || "",
+      childGender:     document.getElementById("reg-gender")?.value || "",
+      kindergarten:    document.getElementById("reg-kindergarten")?.value || "",
+      zodiac:          document.getElementById("reg-zodiac")?.value || "",
+      personalityTags: personalityTags,
+      emotionTag:      "",
+      energyTag:       "",
+      likedActivities: likedActivities,
+      dislikedActivities: [],
+      parentIntro:     document.getElementById("reg-intro")?.value || "",
+      preferVenues:    preferVenues,
+      satAM: document.getElementById("slot-satAM")?.classList.contains("selected"),
+      satPM: document.getElementById("slot-satPM")?.classList.contains("selected"),
+      sunAM: document.getElementById("slot-sunAM")?.classList.contains("selected"),
+      sunPM: document.getElementById("slot-sunPM")?.classList.contains("selected"),
+    };
+
+    try {
+      await fetch(GAS_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "register", data: data })
+      });
+      // no-cors 無法讀取回傳值，直接跳頁
+      goTo("page-home");
+    } catch(e) {
+      alert("網路錯誤：" + e);
+      btn.textContent = "完成註冊";
+      btn.disabled = false;
+    }
+  }
+
+  function regNext(step) {
+    document.getElementById('reg-step1').style.display = 'none';
+    document.getElementById('reg-step2').style.display = 'none';
+    document.getElementById('reg-step3').style.display = 'none';
+    document.getElementById('reg-step' + step).style.display = 'block';
+    document.getElementById('prog1').classList.toggle('done', step >= 1);
+    document.getElementById('prog2').classList.toggle('done', step >= 2);
+    document.getElementById('prog3').classList.toggle('done', step >= 3);
+    const scroller = document.getElementById('reg-scroll');
+    if (scroller) scroller.scrollTop = 0;
+    window.scrollTo(0, 0);
+  }
+
+  // ── 動態載入 GAS 設定 ──
+  async function loadConfig() {
+    try {
+      const res = await fetch(GAS_URL);
+      const data = await res.json();
+      if (!data.success) return;
+
+      const pContainer = document.getElementById("tags-personality");
+      if (pContainer) pContainer.innerHTML = data.tags.personality.map(t =>
+        `<div class="tag-chip" onclick="toggleTag(this)">${t}</div>`).join("");
+
+      const aContainer = document.getElementById("tags-liked");
+      if (aContainer) aContainer.innerHTML = data.tags.activity.map(t =>
+        `<div class="tag-chip" onclick="toggleTagPeach(this)">${t}</div>`).join("");
+
+      const vContainer = document.getElementById("venue-list");
+      if (vContainer) vContainer.innerHTML = data.venues.map((v,i) =>
+        `<div class="venue-option ${i===0?'selected':''}" onclick="toggleVenue(this)" data-id="${v.id}">
+          <div class="venue-icon"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
+          <div class="venue-info"><div class="venue-name">${v.name}</div><div class="venue-sub">${v.type}・${v.area}</div></div>
+          <div class="venue-check"><i class="bi bi-check-circle-fill"></i></div>
+        </div>`).join("");
+
+      const fvContainer = document.getElementById("find-venue-list");
+      if (fvContainer) fvContainer.innerHTML = data.venues.map((v,i) =>
+        `<div class="venue-option" onclick="selectVenue(this)" data-id="${v.id}">
+          <div class="venue-icon"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
+          <div class="venue-info"><div class="venue-name">${v.name}</div><div class="venue-sub">${v.type}・${v.area}・${v.ageRange}</div></div>
+          <div class="venue-check"><i class="bi bi-check-circle-fill"></i></div>
+        </div>`).join("");
+
+      const hotContainer = document.getElementById("hot-venues");
+      if (hotContainer && data.venues.length > 0) {
+        hotContainer.innerHTML = data.venues.slice(0,3).map((v,i) =>
+          `${i>0?'<div class="divider" style="margin:4px 0"></div>':''}
+          <div style="display:flex;align-items:center;gap:12px;cursor:pointer" onclick="goTo('page-find')">
+            <div style="font-size:28px"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
+            <div><div style="font-weight:700;font-size:13px">${v.name}</div>
+            <div style="font-size:11px;color:var(--text-sub)">${v.type}・${v.ageRange}</div></div>
+          </div>`).join("");
+      }
+    } catch(e) {
+      console.log("loadConfig error:", e);
+      const hotContainer = document.getElementById("hot-venues");
+      if (hotContainer) hotContainer.innerHTML = '<div style="color:var(--text-sub);font-size:13px">場所載入失敗，請重新整理</div>';
+    }
+  }
+  loadConfig();
+
+  // ── LIFF ──
+  async function initLiff() {
+    try {
+      await liff.init({ liffId: LIFF_ID });
+      if (liff.isLoggedIn()) {
+        const profile = await liff.getProfile();
+        applyLineProfile(profile.displayName, profile.pictureUrl, profile.userId);
+      } else { liff.login(); }
+    } catch(err) { console.error("LIFF error", err); }
+  }
+  initLiff();
+
+  function applyLineProfile(name, avatar, uid) {
+    window.LINE_UID = uid; window.LINE_NAME = name; window.LINE_AVATAR = avatar;
+    document.getElementById("home-name").textContent = name;
+    document.getElementById("home-avatar").src = avatar;
+    document.getElementById("reg-nickname").value = name;
+    const meAvatar = document.getElementById("profile-avatar");
+    const meName = document.getElementById("profile-name");
+    if (meAvatar) meAvatar.src = avatar;
+    if (meName) meName.textContent = name;
+    loadUserProfile(uid);
+  }
+
+  async function loadUserProfile(uid) {
+    try {
+      const res = await fetch(GAS_URL + "?action=getProfile&lineUid=" + uid);
+      const data = await res.json();
+      if (data.success && data.profile) {
+        const p = data.profile;
+        const age = p.childBirthday ? Math.floor((new Date()-new Date(p.childBirthday))/(1000*60*60*24*365.25)) : "";
+        const homeSub = document.getElementById("home-sub");
+        if (homeSub) homeSub.textContent = [p.childName, age?age+"歲":"", p.area].filter(Boolean).join("・");
+        const profileName = document.getElementById("profile-name");
+        if (profileName) profileName.textContent = p.nickname || window.LINE_NAME;
+        const profileSub = document.getElementById("profile-sub");
+        if (profileSub) profileSub.textContent = [p.childName, age?age+"歲":p.childGender, p.area].filter(Boolean).join("・");
+      } else {
+        const homeSub = document.getElementById("home-sub");
+        if (homeSub) homeSub.textContent = "點下方完成登記 ↓";
+      }
+    } catch(e) {
+      const homeSub = document.getElementById("home-sub");
+      if (homeSub) homeSub.textContent = "";
+    }
+  }
+
+  // ── 配對 ──
+  async function startFindMatches() {
+    if (!window.LINE_UID) { alert("請先登入 LINE"); return; }
+    goTo('page-results');
+    document.getElementById('results-title').textContent = '搜尋中...';
+    document.getElementById('match-results-container').innerHTML =
+      '<div style="text-align:center;padding:40px;color:var(--text-sub)"><div style="font-size:32px;margin-bottom:12px;color:var(--sky)"><i class="bi bi-search-heart"></i></div>正在尋找合適的玩伴...</div>';
+    try {
+      const res = await fetch(GAS_URL + "?action=findMatches&lineUid=" + window.LINE_UID);
+      const data = await res.json();
+      if (!data.success || !data.matches || data.matches.length === 0) {
+        document.getElementById('results-title').textContent = '暫無配對';
+        document.getElementById('match-results-container').innerHTML =
+          '<div style="text-align:center;padding:40px;color:var(--text-sub)"><div style="font-size:48px;margin-bottom:12px;color:var(--mint)"><i class="bi bi-people"></i></div><div style="font-weight:700;margin-bottom:8px">目前還沒有符合的玩伴</div><div style="font-size:13px">我們會持續擴大社群，邀請更多家長加入！</div></div>';
+        return;
+      }
+      const matches = data.matches;
+      document.getElementById('results-title').textContent = '找到 '+matches.length+' 個玩伴';
+      const colors = ['','blue','yellow'];
+      document.getElementById('match-results-container').innerHTML = matches.map((m,i) => `
+        <div class="match-card ${colors[i%colors.length]}">
+          <div class="match-header">
+            <div style="background:#e0f7f4;display:flex;align-items:center;justify-content:center;font-size:22px;border-radius:50%;width:48px;height:48px;flex-shrink:0;color:var(--sky)"><i class="bi bi-person-circle"></i></div>
+            <div style="flex:1"><div class="match-name">${m.childName||'小朋友'}・${m.childAge}歲${m.childGender||''}</div>
+            <div style="font-size:12px;color:var(--text-sub)">${m.nickname}・${m.area}</div></div>
+          </div>
+          ${m.personality?`<div class="match-tags">${m.personality.split('、').map(t=>`<span class="badge badge-purple">${t}</span>`).join('')}</div>`:''}
+          ${m.likedActivities?`<div class="match-info-row">${m.likedActivities.split('、').map(t=>`<span class="badge badge-peach">${t}</span>`).join('')}</div>`:''}
+          ${m.commonSlots&&m.commonSlots.length>0?`<div style="margin:6px 0 8px;font-size:12px;color:var(--green);font-weight:600"><i class="bi bi-calendar-check-fill"></i> 都有空：${m.commonSlots.join('、')}</div>`:`<div style="margin:6px 0 8px;font-size:12px;color:var(--text-sub)"><i class="bi bi-calendar-x"></i> 尚未填寫共同時段</div>`}
+          ${m.parentIntro?`<div class="match-intro"><i class="bi bi-chat-quote-fill" style="color:var(--sky)"></i>「${m.parentIntro}」</div>`:''}
+          <button class="btn btn-primary" onclick="inviteMatch('${m.lineUid}','${m.nickname}','${m.childName||""}',${ m.childAge||0},'${m.childGender||""}')"><i class="bi bi-send-fill"></i> 邀請約玩</button>
+        </div>`).join('');
+    } catch(e) {
+      document.getElementById('results-title').textContent = '載入失敗';
+      document.getElementById('match-results-container').innerHTML =
+        '<div style="text-align:center;padding:40px;color:var(--text-sub)">載入失敗，請稍後再試</div>';
+    }
+  }
+
+  // ── 送出登記 ──
+  async function submitRegister() {
+    const btn = document.querySelector('#reg-step3 .btn-primary');
+    btn.textContent = "送出中..."; btn.disabled = true;
+    const personalityTags = [...document.querySelectorAll('#tags-personality .tag-chip.selected')].map(el=>el.textContent);
+    const likedActivities = [...document.querySelectorAll('#tags-liked .tag-chip.selected')].map(el=>el.textContent);
+    const preferVenues = [...document.querySelectorAll('#venue-list .venue-option.selected')].map(el=>el.dataset.id).join(",");
+    const data = {
+      lineUid: window.LINE_UID||"U_MOCK_001",
+      nickname: document.getElementById("reg-nickname")?.value||"",
+      phone: "",
+      area: document.getElementById("reg-area")?.value||"",
+      childName: document.getElementById("reg-childname")?.value||"",
+      childBirthday: document.getElementById("reg-birthday")?.value||"",
+      childGender: document.getElementById("reg-gender")?.value||"",
+      kindergarten: document.getElementById("reg-kindergarten")?.value||"",
+      zodiac: document.getElementById("reg-zodiac")?.value||"",
+      personalityTags, likedActivities, dislikedActivities:[],
+      parentIntro: document.getElementById("reg-intro")?.value||"",
+      preferVenues,
+      satAM: document.getElementById("slot-satAM")?.classList.contains("selected"),
+      satPM: document.getElementById("slot-satPM")?.classList.contains("selected"),
+      sunAM: document.getElementById("slot-sunAM")?.classList.contains("selected"),
+      sunPM: document.getElementById("slot-sunPM")?.classList.contains("selected"),
+    };
+    try {
+      await fetch(GAS_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"application/json"}, body:JSON.stringify({action:"register",data}) });
+      goTo("page-home");
+    } catch(e) {
+      alert("網路錯誤："+e);
+      btn.textContent = "完成登記"; btn.disabled = false;
+    }
+  }
+
+  // ── 邀請約玩 ──
+  window.currentMatch = null;
+  function inviteMatch(toUid, nickname, childName, childAge, childGender) {
+    window.currentMatch = { toUid, nickname, childName, childAge, childGender };
+    // 備援：從 home-sub 讀取（格式：「小孩名・N歲・地區」）
+    if (!window.MY_CHILD_NAME) {
+      const homeSub = document.getElementById('home-sub');
+      if (homeSub) window.MY_CHILD_NAME = (homeSub.textContent || '').split('・')[0] || '';
+    }
+    const myChildName = window.MY_CHILD_NAME || '';
+    const myAge = window.MY_CHILD_AGE || '';
+    document.getElementById('confirm-title').textContent = '邀請 ' + nickname + ' 一起玩';
+    const kidsEl = document.getElementById('confirm-kids');
+    if (kidsEl) {
+      const myPart = myChildName ? myChildName + (myAge ? '（' + myAge + '歲）' : '') : '我的孩子';
+      const theirPart = (childName || '小朋友') + (childAge ? '（' + childAge + '歲）' : '');
+      kidsEl.textContent = myPart + ' × ' + theirPart;
+    }
+    const myAvatar = document.getElementById('confirm-my-avatar');
+    if (myAvatar && window.LINE_AVATAR) myAvatar.src = window.LINE_AVATAR;
+    goTo('page-confirm');
+  }
+
+  async function sendInvite() {
+    const m = window.currentMatch;
+    if (!m) { goTo('page-sent'); return; }
+    // 更新 sent 頁文字
+    const sub = document.getElementById('sent-sub');
+    if (sub) sub.innerHTML = m.nickname + ' 收到通知後<br>會在 48 小時內回覆';
+    // 送出到 GAS（no-cors，不讀回應）
+    try {
+      await fetch(GAS_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'createMatch',
+          fromUid: window.LINE_UID,
+          toUid: m.toUid
+        })
+      });
+    } catch(e) {}
+    goTo('page-sent');
+  }
+
+  async function submitVenueRequest() {
+    const name = document.getElementById('venue-name')?.value.trim();
+    const reason = document.getElementById('venue-reason')?.value.trim();
+    if (!name || !reason) { alert('請填寫場所名稱和推薦理由'); return; }
+    const btn = document.getElementById('venue-submit-btn');
+    btn.textContent = '送出中...'; btn.disabled = true;
+    try {
+      await fetch(GAS_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'submitVenue',
+          data: {
+            lineUid: window.LINE_UID || '',
+            venueName: name,
+            type: document.getElementById('venue-type')?.value || '',
+            area: document.getElementById('venue-area')?.value || '',
+            address: document.getElementById('venue-address')?.value || '',
+            ageRange: document.getElementById('venue-age')?.value || '',
+            reason: reason
+          }
+        })
+      });
+      alert('申請已送出！審核通過後會出現在場所清單 🎉');
+      goTo('page-home');
+    } catch(e) {
+      alert('送出失敗，請稍後再試');
+    }
+    btn.textContent = '送出申請'; btn.disabled = false;
+  }
+
+
+  function switchFaqTab(tab) {
+    document.getElementById('faq-panel1').style.display = tab === 1 ? 'block' : 'none';
+    document.getElementById('faq-panel2').style.display = tab === 2 ? 'block' : 'none';
+    document.getElementById('faq-tab1').style.background = tab === 1 ? 'var(--green)' : 'white';
+    document.getElementById('faq-tab1').style.color = tab === 1 ? 'white' : 'var(--text-sub)';
+    document.getElementById('faq-tab1').style.border = tab === 1 ? 'none' : '1px solid var(--border)';
+    document.getElementById('faq-tab2').style.background = tab === 2 ? 'var(--green)' : 'white';
+    document.getElementById('faq-tab2').style.color = tab === 2 ? 'white' : 'var(--text-sub)';
+    document.getElementById('faq-tab2').style.border = tab === 2 ? 'none' : '1px solid var(--border)';
+  }
+
+  async function submitFeedback() {
+    const text = document.getElementById('faq-feedback')?.value.trim();
+    if (!text) { alert('請填寫你的問題或建議'); return; }
+    const btn = document.getElementById('faq-submit-btn');
+    btn.textContent = '送出中...'; btn.disabled = true;
+    try {
+      await fetch(GAS_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'submitFeedback',
+          lineUid: window.LINE_UID || '',
+          nickname: window.LINE_NAME || '',
+          feedback: text,
+          contact: document.getElementById('faq-contact')?.value || ''
+        })
+      });
+      alert('謝謝你的回饋！我們會認真看 🙏');
+      document.getElementById('faq-feedback').value = '';
+      document.getElementById('faq-contact').value = '';
+      goTo('page-mypage');
+    } catch(e) { alert('送出失敗，請稍後再試'); }
+    btn.textContent = '送出'; btn.disabled = false;
+  }
+
+
+  function switchFaqTab(tab) {
+    document.getElementById('faq-panel1').style.display = tab === 1 ? 'block' : 'none';
+    document.getElementById('faq-panel2').style.display = tab === 2 ? 'block' : 'none';
+    document.getElementById('faq-tab1').style.background = tab === 1 ? 'var(--green)' : 'white';
+    document.getElementById('faq-tab1').style.color = tab === 1 ? 'white' : 'var(--text-sub)';
+    document.getElementById('faq-tab1').style.border = tab === 1 ? 'none' : '1px solid var(--border)';
+    document.getElementById('faq-tab2').style.background = tab === 2 ? 'var(--green)' : 'white';
+    document.getElementById('faq-tab2').style.color = tab === 2 ? 'white' : 'var(--text-sub)';
+    document.getElementById('faq-tab2').style.border = tab === 2 ? 'none' : '1px solid var(--border)';
+  }
+
+  async function submitFeedback() {
+    const text = document.getElementById('faq-feedback')?.value.trim();
+    if (!text) { alert('請填寫你的問題或建議'); return; }
+    const btn = document.getElementById('faq-submit-btn');
+    btn.textContent = '送出中...'; btn.disabled = true;
+    try {
+      await fetch(GAS_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'submitFeedback',
+          lineUid: window.LINE_UID || '',
+          nickname: window.LINE_NAME || '',
+          feedback: text,
+          contact: document.getElementById('faq-contact')?.value || ''
+        })
+      });
+      alert('謝謝你的回饋！我們會認真看 🙏');
+      document.getElementById('faq-feedback').value = '';
+      document.getElementById('faq-contact').value = '';
+      goTo('page-mypage');
+    } catch(e) { alert('送出失敗，請稍後再試'); }
+    btn.textContent = '送出'; btn.disabled = false;
+  }
+
+  // ── 暫停配對 ──
+  async function togglePause() {
+    if (!window.LINE_UID) return;
+    const label = document.getElementById('pause-label');
+    const isPaused = label.textContent === '恢復配對';
+    const newStatus = isPaused ? '啟用' : '暫停';
+    try {
+      await fetch(GAS_URL, {
+        method: "POST", mode: "no-cors",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ action: "updateStatus", lineUid: window.LINE_UID, status: newStatus })
+      });
+      label.textContent = isPaused ? '暫停配對' : '恢復配對';
+      alert(isPaused ? '配對已恢復！' : '配對已暫停，不會出現在搜尋結果中。');
+    } catch(e) { alert('操作失敗，請稍後再試'); }
+  }
+
 </script>
 </body>
 </html>
