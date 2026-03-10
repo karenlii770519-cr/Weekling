@@ -1527,6 +1527,8 @@
       // 載入失敗時用預設值
       loadDefaultTags();
     }
+    // 預填標籤（若 profile 已載入）
+    if (window.PREFILL_TAGS) { window.PREFILL_TAGS(); window.PREFILL_TAGS = null; }
   }
 
   function loadDefaultTags() {
@@ -2047,6 +2049,46 @@
       alert(isPaused ? '配對已恢復！' : '配對已暫停，不會出現在搜尋結果中。');
     } catch(e) { alert('操作失敗，請稍後再試'); }
   }
+
+
+  <!-- ════ FAQ ════ -->
+  <div class="page" id="page-faq">
+    <div class="topbar">
+      <button class="back-btn" onclick="goTo('page-mypage')">←</button>
+      <span class="topbar-title">常見問題</span>
+    </div>
+    <div class="scroll-content">
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button id="faq-tab1" onclick="switchFaqTab(1)"
+          style="flex:1;padding:10px;border-radius:20px;border:none;background:var(--green);color:white;font-weight:700;font-size:13px;cursor:pointer">常見問題</button>
+        <button id="faq-tab2" onclick="switchFaqTab(2)"
+          style="flex:1;padding:10px;border-radius:20px;border:1px solid var(--border);background:white;color:var(--text-sub);font-size:13px;cursor:pointer">我有問題想說</button>
+      </div>
+      <div id="faq-panel1">
+        <div style="text-align:center;padding:40px 20px 20px">
+          <div style="font-size:48px;margin-bottom:16px">🏗️</div>
+          <div style="font-family:'Nunito',sans-serif;font-size:26px;font-weight:900;margin-bottom:12px">建置中</div>
+          <div style="font-size:13px;color:var(--text-sub);line-height:1.9">
+            我們正在為孩子打造一個找玩伴的地方。<br>
+            歡迎爸媽們搶先體驗，任何想法都可以告訴我們。
+          </div>
+        </div>
+      </div>
+      <div id="faq-panel2" style="display:none">
+        <div class="form-group">
+          <label class="form-label">你的問題或建議</label>
+          <textarea class="form-textarea" id="faq-feedback" placeholder="有什麼想說的都可以告訴我們 😊" style="min-height:120px"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">聯絡方式（選填）</label>
+          <input class="form-input" id="faq-contact" placeholder="LINE ID 或電話，方便我們回覆你" />
+        </div>
+        <button class="btn btn-primary" id="faq-submit-btn" onclick="submitFeedback()">
+          <i class="bi bi-send-fill"></i> 送出
+        </button>
+      </div>
+    </div>
+  </div>
 
 </script>
 </body>
