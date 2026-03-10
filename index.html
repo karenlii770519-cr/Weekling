@@ -1542,7 +1542,7 @@
   // 頁面載入時執行
   loadConfig();
 
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbzLs9O15jtmaWGZT01Ug2ojCnvTRK2qc8X26TS0pZiEhQfBZa-Wekw0OTJWOBzS1hr2/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbzei6FRIjv2RVe86mbOsmLxsB5c4c_WRmdAEM8s2PTlgI5U1qxJkUdSOKNx-4BdQIeX/exec";
   const LIFF_ID = "2008649114-wxWy3jJs";
 
   // 常數定義完後才初始化
@@ -1623,7 +1623,8 @@
         setVal("reg-kindergarten", p.kindergarten);
         setVal("reg-zodiac", p.zodiac);
         setVal("reg-parentintro", p.parentIntro);
-        // 預選標籤：等 loadConfig 建完 chip 後再執行
+        // 預選標籤：等 loadConfig 建完 chip 後再執行，同時 setTimeout 保險
+        setTimeout(() => { if (window.PREFILL_TAGS) { window.PREFILL_TAGS(); window.PREFILL_TAGS = null; } }, 1500);
         window.PREFILL_TAGS = () => {
           if (p.personality) {
             p.personality.split("、").forEach(tag => {
@@ -1991,6 +1992,43 @@
       alert('送出失敗，請稍後再試');
     }
     btn.textContent = '送出申請'; btn.disabled = false;
+  }
+
+
+  function switchFaqTab(tab) {
+    document.getElementById('faq-panel1').style.display = tab === 1 ? 'block' : 'none';
+    document.getElementById('faq-panel2').style.display = tab === 2 ? 'block' : 'none';
+    document.getElementById('faq-tab1').style.background = tab === 1 ? 'var(--green)' : 'white';
+    document.getElementById('faq-tab1').style.color = tab === 1 ? 'white' : 'var(--text-sub)';
+    document.getElementById('faq-tab1').style.border = tab === 1 ? 'none' : '1px solid var(--border)';
+    document.getElementById('faq-tab2').style.background = tab === 2 ? 'var(--green)' : 'white';
+    document.getElementById('faq-tab2').style.color = tab === 2 ? 'white' : 'var(--text-sub)';
+    document.getElementById('faq-tab2').style.border = tab === 2 ? 'none' : '1px solid var(--border)';
+  }
+
+  async function submitFeedback() {
+    const text = document.getElementById('faq-feedback')?.value.trim();
+    if (!text) { alert('請填寫你的問題或建議'); return; }
+    const btn = document.getElementById('faq-submit-btn');
+    btn.textContent = '送出中...'; btn.disabled = true;
+    try {
+      await fetch(GAS_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'submitFeedback',
+          lineUid: window.LINE_UID || '',
+          nickname: window.LINE_NAME || '',
+          feedback: text,
+          contact: document.getElementById('faq-contact')?.value || ''
+        })
+      });
+      alert('謝謝你的回饋！我們會認真看 🙏');
+      document.getElementById('faq-feedback').value = '';
+      document.getElementById('faq-contact').value = '';
+      goTo('page-mypage');
+    } catch(e) { alert('送出失敗，請稍後再試'); }
+    btn.textContent = '送出'; btn.disabled = false;
   }
 
   // ── 暫停配對 ──
