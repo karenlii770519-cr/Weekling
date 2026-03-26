@@ -400,6 +400,10 @@
       drop-shadow(0px 2px 4px rgba(77,125,153,0.25));
     animation: logoFloat 4s ease-in-out infinite;
   }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
   @keyframes logoFloat {
     0%,100% { transform: translateY(0px); filter:
       drop-shadow(0px 6px 12px rgba(77,125,153,0.25))
@@ -1044,6 +1048,11 @@
           <div style="font-family:'Nunito',sans-serif;font-size:20px;font-weight:900"><i class="bi bi-chat-heart-fill" style="color:var(--peach);margin-right:6px"></i>自我介紹與可約時段</div>
         </div>
         <div class="form-group">
+          <label class="form-label">LINE ID</label>
+          <input class="form-input" id="reg-lineid" placeholder="例：@karen123" />
+          <div style="font-size:11px;color:var(--text-sub);margin-top:4px">配對成功後分享給對方，讓你們能直接聯繫，不公開</div>
+        </div>
+        <div class="form-group">
           <label class="form-label">家長自介或期許</label>
           <textarea class="form-textarea" id="reg-intro" placeholder="跟其他家長說說你的期待吧！例如：希望小孩有固定玩伴，我自己也希望認識同齡家長，不用每次找話題，一起帶小孩玩就好。（最多200字）"></textarea>
         </div>
@@ -1575,7 +1584,7 @@
   // 頁面載入時執行
   loadConfig();
 
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbzQee86K03PKmH9FRgCHVmmn565ndEoAH8WofcTRIukWaCJguf_7oEsWKIYeA34qrk_/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwyzvzxsfK_UlLr9STveIBkAmOmc_dVLzvOOikNimiVgvSjwPTAYgjD3wyDic-YHjci/exec";
   const LIFF_ID = "2008649114-wxWy3jJs";
 
   // 常數定義完後才初始化
@@ -1650,6 +1659,7 @@
         setVal("reg-kindergarten", p.kindergarten);
         setVal("reg-zodiac", p.zodiac);
         setVal("reg-intro", p.parentIntro);
+        setVal("reg-lineid", p.lineId);
         // 預選時段
         const slotMap = { satAM: 'slot-satAM', satPM: 'slot-satPM', sunAM: 'slot-sunAM', sunPM: 'slot-sunPM' };
         Object.entries(slotMap).forEach(([key, id]) => {
@@ -1726,6 +1736,7 @@
     setVal('reg-kindergarten',p.kindergarten);
     setVal('reg-zodiac',      p.zodiac);
     setVal('reg-intro',       p.parentIntro);
+    setVal('reg-lineid',      p.lineId);
     // 時段
     const slotMap = { satAM: 'slot-satAM', satPM: 'slot-satPM', sunAM: 'slot-sunAM', sunPM: 'slot-sunPM' };
     Object.entries(slotMap).forEach(([key, id]) => {
@@ -2014,6 +2025,7 @@
       zodiac: document.getElementById("reg-zodiac")?.value||"",
       personalityTags, likedActivities, dislikedActivities:[],
       parentIntro: document.getElementById("reg-intro")?.value||"",
+      lineId: document.getElementById("reg-lineid")?.value.trim()||"",
       preferVenues,
       satAM: document.getElementById("slot-satAM")?.classList.contains("selected"),
       satPM: document.getElementById("slot-satPM")?.classList.contains("selected"),
@@ -2157,7 +2169,7 @@
   async function loadHistory() {
     const container = document.getElementById('history-list');
     if (!container) return;
-    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-sub)"><i class="bi bi-arrow-repeat" style="font-size:24px;display:block;margin-bottom:8px;opacity:0.5"></i>載入中...</div>';
+    container.innerHTML = '<div style="text-align:center;padding:60px 20px;color:var(--text-sub)"><i class="bi bi-arrow-repeat" style="font-size:40px;display:block;margin-bottom:16px;color:var(--green);animation:spin 1s linear infinite"></i><div style="font-weight:700;font-size:15px;color:var(--text);margin-bottom:6px">資料載入中</div><div style="font-size:13px">請耐心等待一下下 🙏</div></div>';
     // LINE_UID 可能還沒好（LIFF 初始化中），最多等 3 秒
     if (!window.LINE_UID) {
       await new Promise(resolve => {
