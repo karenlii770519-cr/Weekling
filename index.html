@@ -936,7 +936,7 @@
         <div class="form-group">
           <label class="form-label">家長暱稱<span>*</span> <span style="font-size:11px;color:var(--green);font-weight:600">從 LINE 自動帶入</span></label>
           <div style="position:relative">
-            <input class="form-input" id="reg-nickname" value="小明媽媽" style="padding-right:70px" />
+            <input class="form-input" id="reg-nickname" placeholder="請輸入暱稱" style="padding-right:70px" />
             <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text-sub);cursor:pointer" onclick="document.getElementById('reg-nickname').focus()"><i class="bi bi-pencil-fill" style="font-size:11px"></i> 修改</span>
           </div>
           <div style="font-size:11px;color:var(--text-sub);margin-top:4px">可修改為其他暱稱，不影響你的 LINE 名稱</div>
@@ -1259,9 +1259,9 @@
       <!-- 邀請人資訊 -->
       <div class="incoming-hero">
         <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
-          <img src="https://i.pravatar.cc/96?img=47" style="width:56px;height:56px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.1);flex-shrink:0" />
+          <div style="width:56px;height:56px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.1);flex-shrink:0;background:var(--sky-light);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--sky)"><i class="bi bi-person-circle"></i></div>
           <div>
-            <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:18px">小明媽媽</div>
+            <div id="incoming-nickname" style="font-family:'Nunito',sans-serif;font-weight:900;font-size:18px">載入中...</div>
             <div style="font-size:13px;color:var(--text-sub)">想邀請你這週末一起帶小孩出去玩</div>
           </div>
         </div>
@@ -1269,26 +1269,16 @@
         <!-- 對方小孩資訊 -->
         <div class="incoming-child-card">
           <div style="font-size:12px;font-weight:700;color:var(--text-sub);margin-bottom:10px;letter-spacing:0.5px">關於對方小孩</div>
-          <div style="font-size:15px;font-weight:700;margin-bottom:10px">小明・3歲男生</div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
-            <span class="badge badge-green">活潑外向</span>
-            <span class="badge badge-yellow">精力充沛</span>
-            <span class="badge badge-blue">情緒穩定</span>
-          </div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px">
-            <span class="badge badge-peach"><i class="bi bi-lightning-fill"></i> 跑跳追逐</span>
-            <span class="badge badge-peach"><i class="bi bi-puzzle-fill"></i> 積木</span>
-            <span class="badge badge-peach"><i class="bi bi-tree-fill"></i> 戶外探索</span>
-          </div>
+          <div id="incoming-child-name" style="font-size:15px;font-weight:700;margin-bottom:10px">...</div>
+          <div id="incoming-personality-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
+          <div id="incoming-activity-tags" style="display:flex;flex-wrap:wrap;gap:6px"></div>
         </div>
       </div>
 
       <!-- 家長自介 -->
-      <div class="card">
+      <div class="card" id="incoming-intro-card">
         <div class="card-title"><i class="bi bi-chat-heart-fill" style="color:var(--peach)"></i> 家長說</div>
-        <div style="font-size:13px;color:var(--text-sub);line-height:1.8;background:var(--bg);padding:12px;border-radius:var(--radius-sm)">
-          「希望小孩有固定玩伴，我自己也希望認識同齡家長，不用每次找話題，一起帶小孩玩就好。」
-        </div>
+        <div id="incoming-parent-intro" style="font-size:13px;color:var(--text-sub);line-height:1.8;background:var(--bg);padding:12px;border-radius:var(--radius-sm)"></div>
       </div>
 
       <!-- 約定詳情 -->
@@ -1297,7 +1287,7 @@
         <div style="display:flex;flex-direction:column;gap:10px;font-size:14px">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <span style="color:var(--text-sub)"><i class="bi bi-person-fill"></i> 小孩</span>
-            <span style="font-weight:700" id="confirm-kids">...</span>
+            <span style="font-weight:700" id="incoming-kids">...</span>
           </div>
         </div>
       </div>
@@ -1311,7 +1301,7 @@
         <button class="btn btn-danger-soft" style="flex:1" onclick="goTo('page-home')">
           這次不方便
         </button>
-        <button class="btn btn-primary" style="flex:2" onclick="goTo('page-success')">
+        <button class="btn btn-primary" style="flex:2" id="accept-btn" onclick="acceptInvite()">
           ✅ 接受約玩！
         </button>
       </div>
@@ -1320,21 +1310,23 @@
 
   <!-- ════ SUCCESS ════ -->
   <div class="page" id="page-success">
-    <div style="display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:16px">
-      <img src="https://i.pravatar.cc/96?img=47" style="width:64px;height:64px;border-radius:50%;border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,0.12)" />
-      <div style="font-size:44px;color:#32E1C8"><i class="bi bi-stars"></i></div>
-      <div style="width:64px;height:64px;border-radius:50%;border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,0.12);background:#e0f7f4;display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--sky)"><i class="bi bi-person-circle"></i></div>
-    </div>
-    <div class="success-title">邀請已送出！</div>
-    <div class="success-sub" id="sent-sub">對方收到通知後<br>會在 48 小時內回覆</div>
-    <div class="icebreaker-box" id="sent-icebreaker" style="display:none">
-      <div class="icebreaker-title"><i class="bi bi-lightbulb-fill"></i> 破冰小提示</div>
-      <div class="icebreaker-row">
-        <i class="bi bi-geo-alt-fill" style="color:var(--sky)"></i> 建議在場所門口碰面，讓小孩自己探索<br>
-        <i class="bi bi-clock" style="color:var(--text-sub)"></i> 玩個 1 小時就很足夠，輕鬆就好
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px 32px;text-align:center;background:linear-gradient(160deg,#E8F8EE,#FFF8F0)">
+      <div style="display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:20px">
+        <img id="success-my-avatar" src="" style="width:64px;height:64px;border-radius:50%;border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,0.12);background:#eee;object-fit:cover" />
+        <div style="font-size:44px;color:#32E1C8"><i class="bi bi-stars"></i></div>
+        <div id="success-their-avatar" style="width:64px;height:64px;border-radius:50%;border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,0.12);background:#e0f7f4;display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--sky)"><i class="bi bi-person-circle"></i></div>
       </div>
+      <div class="success-title" id="success-title">配對成功！</div>
+      <div class="success-sub" id="success-sub" style="margin-bottom:24px">你們約好了！<br>一起帶小孩出去玩吧</div>
+      <div class="icebreaker-box" id="sent-icebreaker" style="display:block;width:100%;margin-bottom:20px">
+        <div class="icebreaker-title"><i class="bi bi-lightbulb-fill"></i> 破冰小提示</div>
+        <div class="icebreaker-row">
+          <i class="bi bi-geo-alt-fill" style="color:var(--sky)"></i> 建議在場所門口碰面，讓小孩自己探索<br>
+          <i class="bi bi-clock" style="color:var(--text-sub)"></i> 玩個 1 小時就很足夠，輕鬆就好
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="goTo('page-home')">回到首頁</button>
     </div>
-    <button class="btn btn-primary" style="width:100%" onclick="goTo('page-home')">回到首頁</button>
   </div>
 
   <!-- ════ HISTORY ════ -->
@@ -1583,7 +1575,7 @@
   // 頁面載入時執行
   loadConfig();
 
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbxdF8ZN8O2SHJM0TkalaThd_OeqXlyk4QcjizkG98K9lhX35Lfrb2smr598ZVuKRZty/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbxP5Wp4xZIBPNdDKJk6FJvG7JQkoTgPP7q6jwtMfVf8JuarzooOqnEytGmThJOzOmIt/exec";
   const LIFF_ID = "2008649114-wxWy3jJs";
 
   // 常數定義完後才初始化
@@ -1596,6 +1588,12 @@
       if (liff.isLoggedIn()) {
         const profile = await liff.getProfile();
         applyLineProfile(profile.displayName, profile.pictureUrl, profile.userId);
+        // 若從邀請連結進入（?matchId=xxx），直接跳到確認頁
+        const params = new URLSearchParams(location.search);
+        const matchId = params.get('matchId');
+        if (matchId) {
+          loadIncomingMatch(matchId);
+        }
       } else {
         liff.login();
       }
@@ -1623,19 +1621,7 @@
   };
 
   async function loadUserProfile(uid) {
-    try {
-      const res = await fetch(GAS_URL + "?action=getConfig");
-      // 從 GAS 讀取用戶資料
-      const r2 = await fetch(GAS_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "getProfile", lineUid: uid })
-      });
-      // no-cors 無法讀回傳，改用 GET
-    } catch(e) {}
-
-    // 直接用 GET 讀用戶資料
+    // 直接用 GET 讀用戶資料（移除之前多餘的 getConfig + no-cors POST）
     try {
       const res = await fetch(GAS_URL + "?action=getProfile&lineUid=" + uid);
       const data = await res.json();
@@ -1663,7 +1649,13 @@
         setVal("reg-gender", p.childGender);
         setVal("reg-kindergarten", p.kindergarten);
         setVal("reg-zodiac", p.zodiac);
-        setVal("reg-parentintro", p.parentIntro);
+        setVal("reg-intro", p.parentIntro);
+        // 預選時段
+        const slotMap = { satAM: 'slot-satAM', satPM: 'slot-satPM', sunAM: 'slot-sunAM', sunPM: 'slot-sunPM' };
+        Object.entries(slotMap).forEach(([key, id]) => {
+          const el = document.getElementById(id);
+          if (el) { el.classList.toggle('selected', !!p[key]); }
+        });
         // 預選標籤：等 loadConfig 建完 chip 後再執行，同時 setTimeout 保險
         setTimeout(() => { if (window.PREFILL_TAGS) { window.PREFILL_TAGS(); window.PREFILL_TAGS = null; } }, 1500);
         window.PREFILL_TAGS = () => {
@@ -1707,6 +1699,55 @@
     if (window.LINE_NAME) {
       applyLineProfile(window.LINE_NAME, window.LINE_AVATAR, window.LINE_UID);
     }
+    if (pageId === 'page-history') loadHistory();
+    if (pageId === 'page-register') prefillRegisterForm();
+  }
+
+  async function prefillRegisterForm() {
+    let p = window.EXISTING_PROFILE;
+    // 若 profile 還沒載入（用戶點太快），直接去 fetch 一次
+    if (!p && window.LINE_UID) {
+      try {
+        const res = await fetch(GAS_URL + "?action=getProfile&lineUid=" + window.LINE_UID);
+        const data = await res.json();
+        if (data.success && data.profile) {
+          p = data.profile;
+          window.EXISTING_PROFILE = p;
+        }
+      } catch(e) {}
+    }
+    if (!p) return;
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el && val != null && val !== '') el.value = val; };
+    setVal('reg-nickname',    p.nickname || window.LINE_NAME);
+    setVal('reg-area',        p.area);
+    setVal('reg-childname',   p.childName);
+    setVal('reg-birthday',    p.childBirthday ? p.childBirthday.split('T')[0] : '');
+    setVal('reg-gender',      p.childGender);
+    setVal('reg-kindergarten',p.kindergarten);
+    setVal('reg-zodiac',      p.zodiac);
+    setVal('reg-intro',       p.parentIntro);
+    // 時段
+    const slotMap = { satAM: 'slot-satAM', satPM: 'slot-satPM', sunAM: 'slot-sunAM', sunPM: 'slot-sunPM' };
+    Object.entries(slotMap).forEach(([key, id]) => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('selected', !!p[key]);
+    });
+    // 標籤
+    const applyTags = (profileField, selector, cls) => {
+      if (!p[profileField]) return;
+      p[profileField].split('、').forEach(tag => {
+        document.querySelectorAll(selector + ' .tag-chip').forEach(el => {
+          if (el.textContent.trim() === tag) el.classList.add(cls);
+        });
+      });
+    };
+    applyTags('personality',     '#tags-personality', 'selected');
+    applyTags('likedActivities', '#tags-liked',        'selected');
+    // 標題改為「編輯資料」
+    const titleEl = document.querySelector('#page-register .topbar-title');
+    if (titleEl) titleEl.textContent = '編輯個人資料';
+    const submitBtn = document.querySelector('#reg-step3 .btn-primary');
+    if (submitBtn) submitBtn.innerHTML = '儲存更新 <i class="bi bi-check-circle-fill"></i>';
   }
 
   function toggleTag(el) {
@@ -1847,6 +1888,10 @@
       if (liff.isLoggedIn()) {
         const profile = await liff.getProfile();
         applyLineProfile(profile.displayName, profile.pictureUrl, profile.userId);
+        // 若 URL 帶有 matchId（被邀請方從 LINE 通知點進來）
+        const params = new URLSearchParams(window.location.search);
+        const matchId = params.get('matchId');
+        if (matchId) loadIncomingMatch(matchId);
       } else { liff.login(); }
     } catch(err) { console.error("LIFF error", err); }
   }
@@ -1871,12 +1916,15 @@
       if (data.success && data.profile) {
         const p = data.profile;
         const age = p.childBirthday ? Math.floor((new Date()-new Date(p.childBirthday))/(1000*60*60*24*365.25)) : "";
+        window.MY_CHILD_NAME = p.childName || "";
+        window.MY_CHILD_AGE = age || "";
         const homeSub = document.getElementById("home-sub");
         if (homeSub) homeSub.textContent = [p.childName, age?age+"歲":"", p.area].filter(Boolean).join("・");
         const profileName = document.getElementById("profile-name");
         if (profileName) profileName.textContent = p.nickname || window.LINE_NAME;
         const profileSub = document.getElementById("profile-sub");
         if (profileSub) profileSub.textContent = [p.childName, age?age+"歲":p.childGender, p.area].filter(Boolean).join("・");
+        loadPendingMatches(uid);
       } else {
         const homeSub = document.getElementById("home-sub");
         if (homeSub) homeSub.textContent = "點下方完成登記 ↓";
@@ -1885,6 +1933,27 @@
       const homeSub = document.getElementById("home-sub");
       if (homeSub) homeSub.textContent = "";
     }
+  }
+
+  async function loadPendingMatches(uid) {
+    try {
+      const res = await fetch(GAS_URL + "?action=getMyMatches&lineUid=" + uid);
+      const data = await res.json();
+      if (!data.success) return;
+      const pending = data.matches.filter(m => m.status === "等待確認" && !m.isSender);
+      const el = document.getElementById("pending-msg");
+      if (!el) return;
+      if (pending.length > 0) {
+        el.innerHTML = pending.map(m =>
+          `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+            <span style="font-weight:600;color:var(--text)">${m.otherNickname} 邀請你！</span>
+            <button class="btn btn-primary" style="padding:4px 12px;font-size:12px" onclick="loadIncomingMatch('${m.matchId}')">查看</button>
+          </div>`
+        ).join("");
+      } else {
+        el.textContent = "暫無等待確認的邀請";
+      }
+    } catch(e) {}
   }
 
   // ── 配對 ──
@@ -1986,9 +2055,6 @@
   async function sendInvite() {
     const m = window.currentMatch;
     if (!m) { goTo('page-sent'); return; }
-    // 更新 sent 頁文字
-    const sub = document.getElementById('sent-sub');
-    if (sub) sub.innerHTML = m.nickname + ' 收到通知後<br>會在 48 小時內回覆';
     // 送出到 GAS（no-cors，不讀回應）
     try {
       await fetch(GAS_URL, {
@@ -2002,6 +2068,145 @@
       });
     } catch(e) {}
     goTo('page-sent');
+  }
+
+  // ── 載入被邀請方的邀請詳情 ──
+  async function loadIncomingMatch(matchId) {
+    try {
+      const res = await fetch(GAS_URL + '?action=getMatchDetail&matchId=' + matchId);
+      const data = await res.json();
+      if (!data.success) { console.warn('getMatchDetail failed', data.message); return; }
+      window.currentIncomingMatch = data;
+      populateIncomingPage(data);
+      goTo('page-incoming');
+    } catch(e) { console.error('loadIncomingMatch error', e); }
+  }
+
+  function populateIncomingPage(data) {
+    const el = id => document.getElementById(id);
+    if (el('incoming-nickname')) el('incoming-nickname').textContent = data.fromNickname || '有人';
+    const childAge = data.fromChildAge != null ? data.fromChildAge + '歲' : '';
+    if (el('incoming-child-name')) {
+      el('incoming-child-name').textContent = [data.fromChildName || '小朋友', childAge, data.fromChildGender].filter(Boolean).join('・');
+    }
+    if (el('incoming-personality-tags')) {
+      el('incoming-personality-tags').innerHTML = data.fromPersonality
+        ? data.fromPersonality.split('、').map(t => `<span class="badge badge-green">${t}</span>`).join('')
+        : '';
+    }
+    if (el('incoming-activity-tags')) {
+      el('incoming-activity-tags').innerHTML = data.fromLikedActivities
+        ? data.fromLikedActivities.split('、').map(t => `<span class="badge badge-peach">${t}</span>`).join('')
+        : '';
+    }
+    const introCard = el('incoming-intro-card');
+    if (introCard) introCard.style.display = data.fromParentIntro ? 'block' : 'none';
+    if (el('incoming-parent-intro')) el('incoming-parent-intro').textContent = '「' + (data.fromParentIntro || '') + '」';
+
+    // 小孩配對資訊
+    if (el('incoming-kids')) {
+      const myPart = window.MY_CHILD_NAME ? window.MY_CHILD_NAME + (window.MY_CHILD_AGE ? '（' + window.MY_CHILD_AGE + '歲）' : '') : '我的孩子';
+      const theirPart = (data.fromChildName || '對方小孩') + (data.fromChildAge != null ? '（' + data.fromChildAge + '歲）' : '');
+      el('incoming-kids').textContent = myPart + ' × ' + theirPart;
+    }
+  }
+
+  // ── 被邀請方接受約玩 ──
+  async function acceptInvite() {
+    const m = window.currentIncomingMatch;
+    if (!m || !window.LINE_UID) return;
+    const btn = document.getElementById('accept-btn');
+    btn.textContent = '確認中...';
+    btn.disabled = true;
+    try {
+      await fetch(GAS_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'confirmMatch', matchId: m.matchId, lineUid: window.LINE_UID })
+      });
+    } catch(e) {}
+    populateSuccessPage(m);
+    goTo('page-success');
+    btn.textContent = '✅ 接受約玩！';
+    btn.disabled = false;
+  }
+
+  function populateSuccessPage(m) {
+    // 我的頭像
+    const myAvatarEl = document.getElementById('success-my-avatar');
+    if (myAvatarEl) {
+      if (window.LINE_AVATAR) {
+        myAvatarEl.src = window.LINE_AVATAR;
+      } else {
+        myAvatarEl.style.display = 'none';
+      }
+    }
+    // 標題帶入對方暱稱
+    const titleEl = document.getElementById('success-title');
+    if (titleEl) titleEl.textContent = '和 ' + (m.fromNickname || '對方') + ' 配對成功！';
+    // 說明帶入雙方小孩名字
+    const subEl = document.getElementById('success-sub');
+    if (subEl) {
+      const myChild = window.MY_CHILD_NAME || '你的孩子';
+      const theirChild = m.fromChildName || '對方小孩';
+      subEl.innerHTML = myChild + ' 和 ' + theirChild + ' 要去玩了！<br>快去打個招呼吧 🎉';
+    }
+  }
+
+  // ── 配對紀錄 ──
+  async function loadHistory() {
+    const container = document.getElementById('history-list');
+    if (!container) return;
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-sub)"><i class="bi bi-arrow-repeat" style="font-size:24px;display:block;margin-bottom:8px;opacity:0.5"></i>載入中...</div>';
+    // LINE_UID 可能還沒好（LIFF 初始化中），最多等 3 秒
+    if (!window.LINE_UID) {
+      await new Promise(resolve => {
+        let waited = 0;
+        const timer = setInterval(() => {
+          waited += 200;
+          if (window.LINE_UID || waited >= 3000) { clearInterval(timer); resolve(); }
+        }, 200);
+      });
+    }
+    if (!window.LINE_UID) {
+      container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-sub)">請先登入 LINE</div>';
+      return;
+    }
+    try {
+      const res = await fetch(GAS_URL + '?action=getMyMatches&lineUid=' + window.LINE_UID);
+      const data = await res.json();
+      if (!data.success || !data.matches || data.matches.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--text-sub);font-size:14px"><i class="bi bi-clock-history" style="font-size:32px;display:block;margin-bottom:12px;opacity:0.3"></i>還沒有配對紀錄</div>';
+        return;
+      }
+      container.innerHTML = data.matches.map(m => renderHistoryCard(m)).join('') +
+        '<div style="height:20px"></div>';
+    } catch(e) {
+      container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-sub)">載入失敗，請稍後再試</div>';
+    }
+  }
+
+  function renderHistoryCard(m) {
+    const statusMap = {
+      '等待確認': { color: 'var(--yellow)', icon: 'bi-hourglass-split' },
+      '已確認':   { color: 'var(--green)',  icon: 'bi-check-circle-fill' },
+    };
+    const s = statusMap[m.status] || { color: 'var(--text-sub)', icon: 'bi-x-circle' };
+    const childAge = m.otherChildAge != null ? m.otherChildAge + '歲' : '';
+    const childLabel = [m.otherChildName || '小朋友', childAge, m.otherChildGender].filter(Boolean).join('・');
+    const roleText = m.isSender ? '你邀請了 ' + (m.otherNickname || '對方') : (m.otherNickname || '對方') + ' 邀請你';
+    const canConfirm = m.status === '等待確認' && !m.isSender;
+    return `
+      <div class="card" style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div style="font-weight:700;font-size:15px">${childLabel}</div>
+          <span style="font-size:12px;color:${s.color};font-weight:600;white-space:nowrap;margin-left:8px"><i class="bi ${s.icon}"></i> ${m.status}</span>
+        </div>
+        <div style="font-size:13px;color:var(--text-sub);margin-bottom:6px">${roleText}</div>
+        ${m.date ? `<div style="font-size:12px;color:var(--text-sub)"><i class="bi bi-calendar3"></i> ${m.date}${m.timeSlot ? ' ' + m.timeSlot : ''}</div>` : ''}
+        ${m.createdAt ? `<div style="font-size:11px;color:var(--text-sub);margin-top:4px">配對時間：${m.createdAt}</div>` : ''}
+        ${canConfirm ? `<button class="btn btn-primary" style="margin-top:10px;width:100%" onclick="loadIncomingMatch('${m.matchId}')">查看並確認</button>` : ''}
+      </div>`;
   }
 
   async function submitVenueRequest() {
@@ -2072,42 +2277,6 @@
     btn.textContent = '送出'; btn.disabled = false;
   }
 
-
-  function switchFaqTab(tab) {
-    document.getElementById('faq-panel1').style.display = tab === 1 ? 'block' : 'none';
-    document.getElementById('faq-panel2').style.display = tab === 2 ? 'block' : 'none';
-    document.getElementById('faq-tab1').style.background = tab === 1 ? 'var(--green)' : 'white';
-    document.getElementById('faq-tab1').style.color = tab === 1 ? 'white' : 'var(--text-sub)';
-    document.getElementById('faq-tab1').style.border = tab === 1 ? 'none' : '1px solid var(--border)';
-    document.getElementById('faq-tab2').style.background = tab === 2 ? 'var(--green)' : 'white';
-    document.getElementById('faq-tab2').style.color = tab === 2 ? 'white' : 'var(--text-sub)';
-    document.getElementById('faq-tab2').style.border = tab === 2 ? 'none' : '1px solid var(--border)';
-  }
-
-  async function submitFeedback() {
-    const text = document.getElementById('faq-feedback')?.value.trim();
-    if (!text) { alert('請填寫你的問題或建議'); return; }
-    const btn = document.getElementById('faq-submit-btn');
-    btn.textContent = '送出中...'; btn.disabled = true;
-    try {
-      await fetch(GAS_URL, {
-        method: 'POST', mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'submitFeedback',
-          lineUid: window.LINE_UID || '',
-          nickname: window.LINE_NAME || '',
-          feedback: text,
-          contact: document.getElementById('faq-contact')?.value || ''
-        })
-      });
-      alert('謝謝你的回饋！我們會認真看 🙏');
-      document.getElementById('faq-feedback').value = '';
-      document.getElementById('faq-contact').value = '';
-      goTo('page-mypage');
-    } catch(e) { alert('送出失敗，請稍後再試'); }
-    btn.textContent = '送出'; btn.disabled = false;
-  }
 
   // ── 暫停配對 ──
   async function togglePause() {
