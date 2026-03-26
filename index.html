@@ -1243,6 +1243,10 @@
             <span style="color:var(--text-sub)"><i class="bi bi-person-fill"></i> 小孩</span>
             <span style="font-weight:700" id="confirm-kids">...</span>
           </div>
+          <div id="confirm-lineid-row" style="display:none;justify-content:space-between;align-items:center">
+            <span style="color:var(--text-sub)"><i class="bi bi-chat-dots-fill"></i> LINE ID</span>
+            <span style="font-weight:700;color:var(--green)" id="confirm-lineid-val"></span>
+          </div>
         </div>
       </div>
 
@@ -1670,7 +1674,7 @@
     }
   }
 
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbytrpTu8tt0mb5gkT3kk0uChsO7A2nhCqPNz2SfNPkjxw2cIOJzho3rrh5R2_kAR_Hm/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbzs0F6u6TLGtA3-z_s-Dk5AtjUoreXPeAN-0i00RKL-ztpu9sR9laQ5n_cGcDUK4PoR/exec";
   const LIFF_ID = "2008649114-wxWy3jJs";
 
   // 常數定義完後才執行
@@ -2048,7 +2052,7 @@
           ${m.likedActivities?`<div class="match-info-row">${m.likedActivities.split('、').map(t=>`<span class="badge badge-peach">${t}</span>`).join('')}</div>`:''}
           ${m.commonSlots&&m.commonSlots.length>0?`<div style="margin:6px 0 8px;font-size:12px;color:var(--green);font-weight:600"><i class="bi bi-calendar-check-fill"></i> 都有空：${m.commonSlots.join('、')}</div>`:`<div style="margin:6px 0 8px;font-size:12px;color:var(--text-sub)"><i class="bi bi-calendar-x"></i> 尚未填寫共同時段</div>`}
           ${m.parentIntro?`<div class="match-intro"><i class="bi bi-chat-quote-fill" style="color:var(--sky)"></i>「${m.parentIntro}」</div>`:''}
-          <button class="btn btn-primary" onclick="inviteMatch('${m.lineUid}','${m.nickname}','${m.childName||""}',${ m.childAge||0},'${m.childGender||""}')"><i class="bi bi-send-fill"></i> 邀請約玩</button>
+          <button class="btn btn-primary" onclick="inviteMatch('${m.lineUid}','${m.nickname}','${m.childName||""}',${m.childAge||0},'${m.childGender||""}','${m.lineId||""}')"><i class="bi bi-send-fill"></i> 邀請約玩</button>
         </div>`).join('');
     } catch(e) {
       document.getElementById('results-title').textContent = '載入失敗';
@@ -2105,9 +2109,8 @@
 
   // ── 邀請約玩 ──
   window.currentMatch = null;
-  function inviteMatch(toUid, nickname, childName, childAge, childGender) {
-    window.currentMatch = { toUid, nickname, childName, childAge, childGender };
-    // 備援：從 home-sub 讀取（格式：「小孩名・N歲・地區」）
+  function inviteMatch(toUid, nickname, childName, childAge, childGender, lineId) {
+    window.currentMatch = { toUid, nickname, childName, childAge, childGender, lineId };
     if (!window.MY_CHILD_NAME) {
       const homeSub = document.getElementById('home-sub');
       if (homeSub) window.MY_CHILD_NAME = (homeSub.textContent || '').split('・')[0] || '';
@@ -2120,6 +2123,17 @@
       const myPart = myChildName ? myChildName + (myAge ? '（' + myAge + '歲）' : '') : '我的孩子';
       const theirPart = (childName || '小朋友') + (childAge ? '（' + childAge + '歲）' : '');
       kidsEl.textContent = myPart + ' × ' + theirPart;
+    }
+    // 顯示對方 LINE ID
+    const lineIdRow = document.getElementById('confirm-lineid-row');
+    const lineIdVal = document.getElementById('confirm-lineid-val');
+    if (lineIdRow && lineIdVal) {
+      if (lineId) {
+        lineIdVal.textContent = lineId;
+        lineIdRow.style.display = 'flex';
+      } else {
+        lineIdRow.style.display = 'none';
+      }
     }
     const myAvatar = document.getElementById('confirm-my-avatar');
     if (myAvatar && window.LINE_AVATAR) myAvatar.src = window.LINE_AVATAR;
