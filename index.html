@@ -1032,8 +1032,20 @@
           <div class="tag-group" id="tags-personality"><div style="color:var(--text-sub);font-size:13px">載入中...</div></div>
         </div>
         <div class="card">
+          <div class="card-title"><i class="bi bi-heart-pulse-fill" style="color:#e879a0"></i> 情緒特質（可複選）</div>
+          <div class="tag-group" id="tags-emotion"><div style="color:var(--text-sub);font-size:13px">載入中...</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="bi bi-lightning-charge-fill" style="color:var(--yellow)"></i> 體力類型（可複選）</div>
+          <div class="tag-group" id="tags-energy"><div style="color:var(--text-sub);font-size:13px">載入中...</div></div>
+        </div>
+        <div class="card">
           <div class="card-title"><i class="bi bi-controller" style="color:var(--peach)"></i> 喜歡的活動（可複選）</div>
           <div class="tag-group" id="tags-liked"><div style="color:var(--text-sub);font-size:13px">載入中...</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="bi bi-x-circle" style="color:var(--text-sub)"></i> 不喜歡的活動（可複選）</div>
+          <div class="tag-group" id="tags-disliked"><div style="color:var(--text-sub);font-size:13px">載入中...</div></div>
         </div>
         <div style="display:flex;gap:10px">
           <button class="btn btn-secondary" style="flex:1" onclick="regNext(1)">上一步</button>
@@ -1524,15 +1536,33 @@
 
       // 渲染個性標籤
       const pContainer = document.getElementById("tags-personality");
-      pContainer.innerHTML = data.tags.personality.map(tag =>
+      pContainer.innerHTML = (data.tags.personality||[]).map(tag =>
         `<div class="tag-chip" onclick="toggleTag(this)">${tag}</div>`
       ).join("");
 
-      // 渲染活動標籤
+      // 渲染情緒特質標籤
+      const emContainer = document.getElementById("tags-emotion");
+      if (emContainer) emContainer.innerHTML = (data.tags.emotion||[]).map(tag =>
+        `<div class="tag-chip" onclick="toggleTag(this)">${tag}</div>`
+      ).join("") || '<div style="color:var(--text-sub);font-size:13px">（尚無標籤，請在 Sheet 標籤設定分頁新增類型「情緒」）</div>';
+
+      // 渲染體力類型標籤
+      const enContainer = document.getElementById("tags-energy");
+      if (enContainer) enContainer.innerHTML = (data.tags.energy||[]).map(tag =>
+        `<div class="tag-chip" onclick="toggleTag(this)">${tag}</div>`
+      ).join("") || '<div style="color:var(--text-sub);font-size:13px">（尚無標籤，請在 Sheet 標籤設定分頁新增類型「體力」）</div>';
+
+      // 渲染喜歡的活動標籤
       const aContainer = document.getElementById("tags-liked");
-      aContainer.innerHTML = data.tags.activity.map(tag =>
+      aContainer.innerHTML = (data.tags.activity||[]).map(tag =>
         `<div class="tag-chip" onclick="toggleTagPeach(this)">${tag}</div>`
       ).join("");
+
+      // 渲染不喜歡的活動標籤
+      const dlContainer = document.getElementById("tags-disliked");
+      if (dlContainer) dlContainer.innerHTML = (data.tags.disliked||[]).map(tag =>
+        `<div class="tag-chip" onclick="toggleTagPeach(this)">${tag}</div>`
+      ).join("") || '<div style="color:var(--text-sub);font-size:13px">（尚無標籤，請在 Sheet 標籤設定分頁新增類型「不喜歡」）</div>';
 
       // 渲染場所清單
       const vContainer = document.getElementById("venue-list");
@@ -1576,15 +1606,33 @@
     const defaultP = ["活潑外向","文靜內斂","慢熱但熟了很好","情緒穩定","精力充沛停不下來","動靜皆宜"];
     pContainer.innerHTML = defaultP.map(t => `<div class="tag-chip" onclick="toggleTag(this)">${t}</div>`).join("");
 
+    const emContainer = document.getElementById("tags-emotion");
+    if (emContainer) {
+      const defaultEm = ["情緒穩定","容易哭鬧","需要引導","喜歡被誇","很獨立"];
+      emContainer.innerHTML = defaultEm.map(t => `<div class="tag-chip" onclick="toggleTag(this)">${t}</div>`).join("");
+    }
+
+    const enContainer = document.getElementById("tags-energy");
+    if (enContainer) {
+      const defaultEn = ["高體力停不下來","中等體力","喜歡靜態活動","視心情而定"];
+      enContainer.innerHTML = defaultEn.map(t => `<div class="tag-chip" onclick="toggleTag(this)">${t}</div>`).join("");
+    }
+
     const aContainer = document.getElementById("tags-liked");
     const defaultA = ["跑跳追逐","積木／樂高","畫畫／手作","角色扮演","沙坑／戶外探索","球類運動"];
     aContainer.innerHTML = defaultA.map(t => `<div class="tag-chip" onclick="toggleTagPeach(this)">${t}</div>`).join("");
+
+    const dlContainer = document.getElementById("tags-disliked");
+    if (dlContainer) {
+      const defaultDL = ["人多吵雜","激烈衝撞","水／沙坑弄髒","需要長時間等待","過於競爭的遊戲"];
+      dlContainer.innerHTML = defaultDL.map(t => `<div class="tag-chip" onclick="toggleTagPeach(this)">${t}</div>`).join("");
+    }
   }
 
   // 頁面載入時執行
   loadConfig();
 
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbwyzvzxsfK_UlLr9STveIBkAmOmc_dVLzvOOikNimiVgvSjwPTAYgjD3wyDic-YHjci/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwVYuPfqQ7guc5pY2vLKAF4yC0R2CWJB4XpSqtRL3JDiAPWUu-jeOw-H0mlMUGgPbyf/exec";
   const LIFF_ID = "2008649114-wxWy3jJs";
 
   // 常數定義完後才初始化
@@ -1669,20 +1717,19 @@
         // 預選標籤：等 loadConfig 建完 chip 後再執行，同時 setTimeout 保險
         setTimeout(() => { if (window.PREFILL_TAGS) { window.PREFILL_TAGS(); window.PREFILL_TAGS = null; } }, 1500);
         window.PREFILL_TAGS = () => {
-          if (p.personality) {
-            p.personality.split("、").forEach(tag => {
-              document.querySelectorAll("#tags-personality .tag-chip").forEach(el => {
+          const applyChips = (field, selector) => {
+            if (!p[field]) return;
+            p[field].split("、").forEach(tag => {
+              document.querySelectorAll(selector + " .tag-chip").forEach(el => {
                 if (el.textContent.trim() === tag) el.classList.add("selected");
               });
             });
-          }
-          if (p.likedActivities) {
-            p.likedActivities.split("、").forEach(tag => {
-              document.querySelectorAll("#tags-liked .tag-chip").forEach(el => {
-                if (el.textContent.trim() === tag) el.classList.add("selected");
-              });
-            });
-          }
+          };
+          applyChips("personality",         "#tags-personality");
+          applyChips("emotion",             "#tags-emotion");
+          applyChips("energy",              "#tags-energy");
+          applyChips("likedActivities",     "#tags-liked");
+          applyChips("dislikedActivities",  "#tags-disliked");
         };
         // 若 tag-chip 已存在就直接執行
         if (document.querySelectorAll("#tags-personality .tag-chip").length > 0) {
@@ -1752,8 +1799,11 @@
         });
       });
     };
-    applyTags('personality',     '#tags-personality', 'selected');
-    applyTags('likedActivities', '#tags-liked',        'selected');
+    applyTags('personality',        '#tags-personality', 'selected');
+    applyTags('emotion',            '#tags-emotion',     'selected');
+    applyTags('energy',             '#tags-energy',      'selected');
+    applyTags('likedActivities',    '#tags-liked',       'selected');
+    applyTags('dislikedActivities', '#tags-disliked',    'selected');
     // 標題改為「編輯資料」
     const titleEl = document.querySelector('#page-register .topbar-title');
     if (titleEl) titleEl.textContent = '編輯個人資料';
@@ -2010,8 +2060,11 @@
   async function submitRegister() {
     const btn = document.querySelector('#reg-step3 .btn-primary');
     btn.textContent = "送出中..."; btn.disabled = true;
-    const personalityTags = [...document.querySelectorAll('#tags-personality .tag-chip.selected')].map(el=>el.textContent);
-    const likedActivities = [...document.querySelectorAll('#tags-liked .tag-chip.selected')].map(el=>el.textContent);
+    const personalityTags   = [...document.querySelectorAll('#tags-personality .tag-chip.selected')].map(el=>el.textContent);
+    const emotionTags       = [...document.querySelectorAll('#tags-emotion .tag-chip.selected')].map(el=>el.textContent);
+    const energyTags        = [...document.querySelectorAll('#tags-energy .tag-chip.selected')].map(el=>el.textContent);
+    const likedActivities   = [...document.querySelectorAll('#tags-liked .tag-chip.selected')].map(el=>el.textContent);
+    const dislikedActivities= [...document.querySelectorAll('#tags-disliked .tag-chip.selected')].map(el=>el.textContent);
     const preferVenues = [...document.querySelectorAll('#venue-list .venue-option.selected')].map(el=>el.dataset.id).join(",");
     const data = {
       lineUid: window.LINE_UID||"U_MOCK_001",
@@ -2023,7 +2076,7 @@
       childGender: document.getElementById("reg-gender")?.value||"",
       kindergarten: document.getElementById("reg-kindergarten")?.value||"",
       zodiac: document.getElementById("reg-zodiac")?.value||"",
-      personalityTags, likedActivities, dislikedActivities:[],
+      personalityTags, emotionTags, energyTags, likedActivities, dislikedActivities,
       parentIntro: document.getElementById("reg-intro")?.value||"",
       lineId: document.getElementById("reg-lineid")?.value.trim()||"",
       preferVenues,
