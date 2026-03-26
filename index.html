@@ -1246,6 +1246,36 @@
         </div>
       </div>
 
+      <div class="card">
+        <div class="card-title"><i class="bi bi-geo-alt-fill" style="color:var(--sky)"></i> 建議地點（選填）</div>
+        <select class="form-input" id="confirm-venue" style="margin-top:4px">
+          <option value="">— 先不指定，之後再約 —</option>
+        </select>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="bi bi-calendar-date" style="color:var(--peach)"></i> 建議日期（選填）</div>
+        <input type="date" class="form-input" id="confirm-date" style="margin-top:4px" />
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="bi bi-clock" style="color:var(--green)"></i> 建議時段（選填）</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
+          <div class="timeslot-btn" id="cslot-satAM" onclick="toggleConfirmSlot(this)" data-val="週六上午">
+            <div class="timeslot-day">週六</div><div class="timeslot-time">上午 9–12</div>
+          </div>
+          <div class="timeslot-btn" id="cslot-satPM" onclick="toggleConfirmSlot(this)" data-val="週六下午">
+            <div class="timeslot-day">週六</div><div class="timeslot-time">下午 1–5</div>
+          </div>
+          <div class="timeslot-btn" id="cslot-sunAM" onclick="toggleConfirmSlot(this)" data-val="週日上午">
+            <div class="timeslot-day">週日</div><div class="timeslot-time">上午 9–12</div>
+          </div>
+          <div class="timeslot-btn" id="cslot-sunPM" onclick="toggleConfirmSlot(this)" data-val="週日下午">
+            <div class="timeslot-day">週日</div><div class="timeslot-time">下午 1–5</div>
+          </div>
+        </div>
+      </div>
+
       <div class="info-box">
         <i class="bi bi-info-circle-fill" style="color:var(--yellow)"></i> 送出後你可以在「配對紀錄」查看對方是否確認
       </div>
@@ -1527,35 +1557,49 @@
 
 <script>
 
+  // 渲染標籤的通用函式（全域，確保所有情況都能呼叫）
+  function renderTags(containerId, tagList, clickFn, placeholder) {
+    var el = document.getElementById(containerId);
+    if (!el) return;
+    var chips = (tagList || []).map(function(t) {
+      return '<div class="tag-chip" onclick="' + clickFn + '(this)">' + t + '</div>';
+    }).join("");
+    el.innerHTML = chips !== "" ? chips : (placeholder ? '<div style="color:var(--text-sub);font-size:13px">' + placeholder + '</div>' : "");
+  }
+
   // ── 動態載入標籤和場所 ──
   async function loadConfig() {
     try {
       const res = await fetch(GAS_URL);
       const data = await res.json();
-      if (!data.success) return;
+      if (!data.success) { loadDefaultTags(); return; }
 
-      // 渲染標籤的通用函式
-      function renderTags(containerId, tagList, clickFn, placeholder) {
-        const el = document.getElementById(containerId);
-        if (!el) return;
-        const chips = (tagList || []).map(t => `<div class="tag-chip" onclick="${clickFn}(this)">${t}</div>`).join("");
-        el.innerHTML = chips || (placeholder ? `<div style="color:var(--text-sub);font-size:13px">${placeholder}</div>` : "");
-      }
-      renderTags("tags-personality", data.tags.personality, "toggleTag",      "");
-      renderTags("tags-emotion",     data.tags.emotion,     "toggleTag",      "尚未設定，請至 Sheet 標籤設定分頁新增類型「情緒」");
-      renderTags("tags-energy",      data.tags.energy,      "toggleTag",      "尚未設定，請至 Sheet 標籤設定分頁新增類型「體力」");
-      renderTags("tags-liked",       data.tags.activity,    "toggleTagPeach", "");
-      renderTags("tags-disliked",    data.tags.disliked,    "toggleTagPeach", "尚未設定，請至 Sheet 標籤設定分頁新增類型「不喜歡」");
+      var tags = data.tags || {};
+      renderTags("tags-personality", tags.personality, "toggleTag",      "");
+      renderTags("tags-emotion",     tags.emotion,     "toggleTag",      "尚未設定：請在 Sheet「標籤設定」分頁新增類型「情緒」的標籤");
+      renderTags("tags-energy",      tags.energy,      "toggleTag",      "尚未設定：請在 Sheet「標籤設定」分頁新增類型「體力」的標籤");
+      renderTags("tags-liked",       tags.activity,    "toggleTagPeach", "");
+      renderTags("tags-disliked",    tags.disliked,    "toggleTagPeach", "尚未設定：請在 Sheet「標籤設定」分頁新增類型「不喜歡」的標籤");
 
-      // 渲染場所清單
+      // 渲染場所清單（登記用）
       const vContainer = document.getElementById("venue-list");
-      vContainer.innerHTML = data.venues.map((v, i) =>
+      if (vContainer) vContainer.innerHTML = data.venues.map((v, i) =>
         `<div class="venue-option ${i===0?'selected':''}" onclick="toggleVenue(this)" data-id="${v.id}">
           <div class="venue-icon"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
           <div class="venue-info">
             <div class="venue-name">${v.name}</div>
             <div class="venue-sub">${v.type}・${v.area}</div>
           </div>
+          <div class="venue-check"><i class="bi bi-check-circle-fill"></i></div>
+        </div>`
+      ).join("");
+
+      // 渲染場所清單（找玩伴用）
+      const fvContainer = document.getElementById("find-venue-list");
+      if (fvContainer) fvContainer.innerHTML = data.venues.map((v, i) =>
+        `<div class="venue-option" onclick="selectVenue(this)" data-id="${v.id}">
+          <div class="venue-icon"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
+          <div class="venue-info"><div class="venue-name">${v.name}</div><div class="venue-sub">${v.type}・${v.area}・${v.ageRange}</div></div>
           <div class="venue-check"><i class="bi bi-check-circle-fill"></i></div>
         </div>`
       ).join("");
@@ -1573,6 +1617,17 @@
             </div>
           </div>`
         ).join("");
+      }
+
+      // 填入邀請確認頁的地點下拉選單
+      const cvSelect = document.getElementById("confirm-venue");
+      if (cvSelect && data.venues && data.venues.length > 0) {
+        data.venues.forEach(function(v) {
+          var opt = document.createElement("option");
+          opt.value = v.id;
+          opt.textContent = v.name + "（" + v.area + "）";
+          cvSelect.appendChild(opt);
+        });
       }
 
     } catch(e) {
@@ -1804,6 +1859,12 @@
     el.classList.toggle('selected');
   }
 
+  function toggleConfirmSlot(el) {
+    // 時段單選
+    document.querySelectorAll('[id^="cslot-"]').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
   function selectVenue(el) {
     el.classList.toggle('selected');
   }
@@ -1874,54 +1935,6 @@
     window.scrollTo(0, 0);
   }
 
-  // ── 動態載入 GAS 設定 ──
-  async function loadConfig() {
-    try {
-      const res = await fetch(GAS_URL);
-      const data = await res.json();
-      if (!data.success) return;
-
-      const pContainer = document.getElementById("tags-personality");
-      if (pContainer) pContainer.innerHTML = data.tags.personality.map(t =>
-        `<div class="tag-chip" onclick="toggleTag(this)">${t}</div>`).join("");
-
-      const aContainer = document.getElementById("tags-liked");
-      if (aContainer) aContainer.innerHTML = data.tags.activity.map(t =>
-        `<div class="tag-chip" onclick="toggleTagPeach(this)">${t}</div>`).join("");
-
-      const vContainer = document.getElementById("venue-list");
-      if (vContainer) vContainer.innerHTML = data.venues.map((v,i) =>
-        `<div class="venue-option ${i===0?'selected':''}" onclick="toggleVenue(this)" data-id="${v.id}">
-          <div class="venue-icon"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
-          <div class="venue-info"><div class="venue-name">${v.name}</div><div class="venue-sub">${v.type}・${v.area}</div></div>
-          <div class="venue-check"><i class="bi bi-check-circle-fill"></i></div>
-        </div>`).join("");
-
-      const fvContainer = document.getElementById("find-venue-list");
-      if (fvContainer) fvContainer.innerHTML = data.venues.map((v,i) =>
-        `<div class="venue-option" onclick="selectVenue(this)" data-id="${v.id}">
-          <div class="venue-icon"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
-          <div class="venue-info"><div class="venue-name">${v.name}</div><div class="venue-sub">${v.type}・${v.area}・${v.ageRange}</div></div>
-          <div class="venue-check"><i class="bi bi-check-circle-fill"></i></div>
-        </div>`).join("");
-
-      const hotContainer = document.getElementById("hot-venues");
-      if (hotContainer && data.venues.length > 0) {
-        hotContainer.innerHTML = data.venues.slice(0,3).map((v,i) =>
-          `${i>0?'<div class="divider" style="margin:4px 0"></div>':''}
-          <div style="display:flex;align-items:center;gap:12px;cursor:pointer" onclick="goTo('page-find')">
-            <div style="font-size:28px"><i class="bi bi-geo-alt-fill" style="color:#32E1C8"></i></div>
-            <div><div style="font-weight:700;font-size:13px">${v.name}</div>
-            <div style="font-size:11px;color:var(--text-sub)">${v.type}・${v.ageRange}</div></div>
-          </div>`).join("");
-      }
-    } catch(e) {
-      console.log("loadConfig error:", e);
-      const hotContainer = document.getElementById("hot-venues");
-      if (hotContainer) hotContainer.innerHTML = '<div style="color:var(--text-sub);font-size:13px">場所載入失敗，請重新整理</div>';
-    }
-  }
-  loadConfig();
 
   // ── LIFF ──
   async function initLiff() {
@@ -2109,7 +2122,10 @@
   async function sendInvite() {
     const m = window.currentMatch;
     if (!m) { goTo('page-sent'); return; }
-    // 送出到 GAS（no-cors，不讀回應）
+    const venueId  = document.getElementById('confirm-venue')?.value || '';
+    const date     = document.getElementById('confirm-date')?.value || '';
+    const slotEl   = document.querySelector('[id^="cslot-"].selected');
+    const timeSlot = slotEl ? slotEl.dataset.val : '';
     try {
       await fetch(GAS_URL, {
         method: 'POST', mode: 'no-cors',
@@ -2117,7 +2133,8 @@
         body: JSON.stringify({
           action: 'createMatch',
           fromUid: window.LINE_UID,
-          toUid: m.toUid
+          toUid: m.toUid,
+          venueId, date, timeSlot
         })
       });
     } catch(e) {}
