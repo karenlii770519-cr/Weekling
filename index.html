@@ -1534,35 +1534,18 @@
       const data = await res.json();
       if (!data.success) return;
 
-      // 渲染個性標籤
-      const pContainer = document.getElementById("tags-personality");
-      pContainer.innerHTML = (data.tags.personality||[]).map(tag =>
-        `<div class="tag-chip" onclick="toggleTag(this)">${tag}</div>`
-      ).join("");
-
-      // 渲染情緒特質標籤
-      const emContainer = document.getElementById("tags-emotion");
-      if (emContainer) emContainer.innerHTML = (data.tags.emotion||[]).map(tag =>
-        `<div class="tag-chip" onclick="toggleTag(this)">${tag}</div>`
-      ).join("") || '<div style="color:var(--text-sub);font-size:13px">（尚無標籤，請在 Sheet 標籤設定分頁新增類型「情緒」）</div>';
-
-      // 渲染體力類型標籤
-      const enContainer = document.getElementById("tags-energy");
-      if (enContainer) enContainer.innerHTML = (data.tags.energy||[]).map(tag =>
-        `<div class="tag-chip" onclick="toggleTag(this)">${tag}</div>`
-      ).join("") || '<div style="color:var(--text-sub);font-size:13px">（尚無標籤，請在 Sheet 標籤設定分頁新增類型「體力」）</div>';
-
-      // 渲染喜歡的活動標籤
-      const aContainer = document.getElementById("tags-liked");
-      aContainer.innerHTML = (data.tags.activity||[]).map(tag =>
-        `<div class="tag-chip" onclick="toggleTagPeach(this)">${tag}</div>`
-      ).join("");
-
-      // 渲染不喜歡的活動標籤
-      const dlContainer = document.getElementById("tags-disliked");
-      if (dlContainer) dlContainer.innerHTML = (data.tags.disliked||[]).map(tag =>
-        `<div class="tag-chip" onclick="toggleTagPeach(this)">${tag}</div>`
-      ).join("") || '<div style="color:var(--text-sub);font-size:13px">（尚無標籤，請在 Sheet 標籤設定分頁新增類型「不喜歡」）</div>';
+      // 渲染標籤的通用函式
+      function renderTags(containerId, tagList, clickFn, placeholder) {
+        const el = document.getElementById(containerId);
+        if (!el) return;
+        const chips = (tagList || []).map(t => `<div class="tag-chip" onclick="${clickFn}(this)">${t}</div>`).join("");
+        el.innerHTML = chips || (placeholder ? `<div style="color:var(--text-sub);font-size:13px">${placeholder}</div>` : "");
+      }
+      renderTags("tags-personality", data.tags.personality, "toggleTag",      "");
+      renderTags("tags-emotion",     data.tags.emotion,     "toggleTag",      "尚未設定，請至 Sheet 標籤設定分頁新增類型「情緒」");
+      renderTags("tags-energy",      data.tags.energy,      "toggleTag",      "尚未設定，請至 Sheet 標籤設定分頁新增類型「體力」");
+      renderTags("tags-liked",       data.tags.activity,    "toggleTagPeach", "");
+      renderTags("tags-disliked",    data.tags.disliked,    "toggleTagPeach", "尚未設定，請至 Sheet 標籤設定分頁新增類型「不喜歡」");
 
       // 渲染場所清單
       const vContainer = document.getElementById("venue-list");
@@ -1629,13 +1612,11 @@
     }
   }
 
-  // 頁面載入時執行
-  loadConfig();
-
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbxLDdl1-mN7kx0R_yWA9hm-Y8E3x_uWGk1XFa0x27CUrmdr7mmXF-GPkxLtn2djzUGZ/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbytrpTu8tt0mb5gkT3kk0uChsO7A2nhCqPNz2SfNPkjxw2cIOJzho3rrh5R2_kAR_Hm/exec";
   const LIFF_ID = "2008649114-wxWy3jJs";
 
-  // 常數定義完後才初始化
+  // 常數定義完後才執行
+  loadConfig();
   initLiff();
 
   // ── LIFF 初始化（背景連線，不強制登入）──
