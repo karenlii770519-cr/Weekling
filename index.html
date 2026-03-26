@@ -1716,49 +1716,58 @@
     if (meAvatar) meAvatar.src = avatar;
     if (meName) meName.textContent = name;
 
-    // 載入用戶資料更新首頁副標
+    // 先從快取立刻帶入，再背景更新
+    const cached = localStorage.getItem("profile_" + uid);
+    if (cached) {
+      try {
+        const p = JSON.parse(cached);
+        window.EXISTING_PROFILE = p;
+        applyProfileToUI(p);
+      } catch(e) {}
+    }
+
     loadUserProfile(uid);
   };
 
+  function applyProfileToUI(p) {
+    const age = p.childBirthday ? Math.floor((new Date() - new Date(p.childBirthday)) / (1000*60*60*24*365.25)) : "";
+    window.MY_CHILD_NAME = p.childName || "";
+    window.MY_CHILD_AGE = age || "";
+    const sub = [p.childName, age ? age+"歲" : "", p.area].filter(Boolean).join("・");
+    const homeSub = document.getElementById("home-sub");
+    if (homeSub && sub) homeSub.textContent = sub;
+    const profileName = document.getElementById("profile-name");
+    if (profileName) profileName.textContent = p.nickname || window.LINE_NAME;
+    const profileSub = document.getElementById("profile-sub");
+    if (profileSub) profileSub.textContent = [p.childName, age ? age+"歲" : p.childGender, p.area].filter(Boolean).join("・");
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+    setVal("reg-nickname",    p.nickname || window.LINE_NAME);
+    setVal("reg-area",        p.area);
+    setVal("reg-childname",   p.childName);
+    setVal("reg-birthday",    p.childBirthday ? p.childBirthday.split("T")[0] : "");
+    setVal("reg-gender",      p.childGender);
+    setVal("reg-kindergarten",p.kindergarten);
+    setVal("reg-zodiac",      p.zodiac);
+    setVal("reg-intro",       p.parentIntro);
+    setVal("reg-lineid",      p.lineId);
+    const slotMap = { satAM:"slot-satAM", satPM:"slot-satPM", sunAM:"slot-sunAM", sunPM:"slot-sunPM" };
+    Object.entries(slotMap).forEach(([key, id]) => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle("selected", !!p[key]);
+    });
+  }
+
   async function loadUserProfile(uid) {
-    // 直接用 GET 讀用戶資料（移除之前多餘的 getConfig + no-cors POST）
     try {
       const res = await fetch(GAS_URL + "?action=getProfile&lineUid=" + uid);
       const data = await res.json();
       if (data.success && data.profile) {
         const p = data.profile;
-        const age = p.childBirthday ? Math.floor((new Date() - new Date(p.childBirthday)) / (1000*60*60*24*365.25)) : "";
-        const sub = [p.childName, age ? age+"歲" : "", p.area].filter(Boolean).join("・");
-        window.MY_CHILD_NAME = p.childName || "";
-        window.MY_CHILD_AGE = age || "";
-        const homeSub = document.getElementById("home-sub");
-        if (homeSub && sub) homeSub.textContent = sub;
-
-        const profileName = document.getElementById("profile-name");
-        if (profileName) profileName.textContent = p.nickname || window.LINE_NAME;
-        const profileSub = document.getElementById("profile-sub");
-        if (profileSub) profileSub.textContent = [p.childName, age ? age+"歲" : p.childGender, p.area].filter(Boolean).join("・");
-
-        // 預填登記表單
+        // 存入快取供下次立刻使用
+        try { localStorage.setItem("profile_" + uid, JSON.stringify(p)); } catch(e) {}
         window.EXISTING_PROFILE = p;
-        const setVal = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
-        setVal("reg-nickname", p.nickname || window.LINE_NAME);
-        setVal("reg-area", p.area);
-        setVal("reg-childname", p.childName);
-        setVal("reg-birthday", p.childBirthday ? p.childBirthday.split("T")[0] : "");
-        setVal("reg-gender", p.childGender);
-        setVal("reg-kindergarten", p.kindergarten);
-        setVal("reg-zodiac", p.zodiac);
-        setVal("reg-intro", p.parentIntro);
-        setVal("reg-lineid", p.lineId);
-        // 預選時段
-        const slotMap = { satAM: 'slot-satAM', satPM: 'slot-satPM', sunAM: 'slot-sunAM', sunPM: 'slot-sunPM' };
-        Object.entries(slotMap).forEach(([key, id]) => {
-          const el = document.getElementById(id);
-          if (el) { el.classList.toggle('selected', !!p[key]); }
-        });
-        // 預選標籤：等 loadConfig 建完 chip 後再執行，同時 setTimeout 保險
-        setTimeout(() => { if (window.PREFILL_TAGS) { window.PREFILL_TAGS(); window.PREFILL_TAGS = null; } }, 1500);
+        applyProfileToUI(p);
+        // 標籤預選：等 loadConfig 建完 chip 後執行
         window.PREFILL_TAGS = () => {
           const applyChips = (field, selector) => {
             if (!p[field]) return;
@@ -1768,16 +1777,16 @@
               });
             });
           };
-          applyChips("personality",         "#tags-personality");
-          applyChips("emotion",             "#tags-emotion");
-          applyChips("energy",              "#tags-energy");
-          applyChips("likedActivities",     "#tags-liked");
-          applyChips("dislikedActivities",  "#tags-disliked");
+          applyChips("personality",        "#tags-personality");
+          applyChips("emotion",            "#tags-emotion");
+          applyChips("energy",             "#tags-energy");
+          applyChips("likedActivities",    "#tags-liked");
+          applyChips("dislikedActivities", "#tags-disliked");
         };
-        // 若 tag-chip 已存在就直接執行
         if (document.querySelectorAll("#tags-personality .tag-chip").length > 0) {
-          window.PREFILL_TAGS();
+          window.PREFILL_TAGS(); window.PREFILL_TAGS = null;
         }
+        loadPendingMatches(uid);
       } else {
         const homeSub = document.getElementById("home-sub");
         if (homeSub) homeSub.textContent = "點下方完成登記 ↓";
@@ -1804,8 +1813,20 @@
   }
 
   async function prefillRegisterForm() {
+    // 等 profile 或 UID 其中一個就緒，最多等 2.5 秒，每 80ms 檢查一次
+    if (!window.EXISTING_PROFILE && !window.LINE_UID) {
+      await new Promise(resolve => {
+        let waited = 0;
+        const timer = setInterval(() => {
+          waited += 80;
+          if (window.EXISTING_PROFILE || window.LINE_UID || waited >= 2500) {
+            clearInterval(timer); resolve();
+          }
+        }, 80);
+      });
+    }
     let p = window.EXISTING_PROFILE;
-    // 若 profile 還沒載入（用戶點太快），直接去 fetch 一次
+    // profile 還沒載入但 UID 已就緒，才去 fetch
     if (!p && window.LINE_UID) {
       try {
         const res = await fetch(GAS_URL + "?action=getProfile&lineUid=" + window.LINE_UID);
@@ -1842,11 +1863,19 @@
         });
       });
     };
-    applyTags('personality',        '#tags-personality', 'selected');
-    applyTags('emotion',            '#tags-emotion',     'selected');
-    applyTags('energy',             '#tags-energy',      'selected');
-    applyTags('likedActivities',    '#tags-liked',       'selected');
-    applyTags('dislikedActivities', '#tags-disliked',    'selected');
+    // 若 chips 已渲染就直接套，否則掛上 PREFILL_TAGS 等 loadConfig 完成後補
+    const doApplyTags = () => {
+      applyTags('personality',        '#tags-personality', 'selected');
+      applyTags('emotion',            '#tags-emotion',     'selected');
+      applyTags('energy',             '#tags-energy',      'selected');
+      applyTags('likedActivities',    '#tags-liked',       'selected');
+      applyTags('dislikedActivities', '#tags-disliked',    'selected');
+    };
+    if (document.querySelectorAll('#tags-personality .tag-chip').length > 0) {
+      doApplyTags();
+    } else {
+      window.PREFILL_TAGS = doApplyTags;
+    }
     // 標題改為「編輯資料」
     const titleEl = document.querySelector('#page-register .topbar-title');
     if (titleEl) titleEl.textContent = '編輯個人資料';
@@ -1973,32 +2002,6 @@
     if (meAvatar) meAvatar.src = avatar;
     if (meName) meName.textContent = name;
     loadUserProfile(uid);
-  }
-
-  async function loadUserProfile(uid) {
-    try {
-      const res = await fetch(GAS_URL + "?action=getProfile&lineUid=" + uid);
-      const data = await res.json();
-      if (data.success && data.profile) {
-        const p = data.profile;
-        const age = p.childBirthday ? Math.floor((new Date()-new Date(p.childBirthday))/(1000*60*60*24*365.25)) : "";
-        window.MY_CHILD_NAME = p.childName || "";
-        window.MY_CHILD_AGE = age || "";
-        const homeSub = document.getElementById("home-sub");
-        if (homeSub) homeSub.textContent = [p.childName, age?age+"歲":"", p.area].filter(Boolean).join("・");
-        const profileName = document.getElementById("profile-name");
-        if (profileName) profileName.textContent = p.nickname || window.LINE_NAME;
-        const profileSub = document.getElementById("profile-sub");
-        if (profileSub) profileSub.textContent = [p.childName, age?age+"歲":p.childGender, p.area].filter(Boolean).join("・");
-        loadPendingMatches(uid);
-      } else {
-        const homeSub = document.getElementById("home-sub");
-        if (homeSub) homeSub.textContent = "點下方完成登記 ↓";
-      }
-    } catch(e) {
-      const homeSub = document.getElementById("home-sub");
-      if (homeSub) homeSub.textContent = "";
-    }
   }
 
   async function loadPendingMatches(uid) {
