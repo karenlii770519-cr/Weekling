@@ -1060,7 +1060,7 @@
           <div style="font-family:'Nunito',sans-serif;font-size:20px;font-weight:900"><i class="bi bi-chat-heart-fill" style="color:var(--peach);margin-right:6px"></i>自我介紹與可約時段</div>
         </div>
         <div class="form-group">
-          <label class="form-label">LINE ID</label>
+          <label class="form-label">LINE ID <span style="color:#e03e3e;font-size:13px">*必填</span></label>
           <input class="form-input" id="reg-lineid" placeholder="例：@karen123" />
           <div style="font-size:11px;color:var(--text-sub);margin-top:4px">配對成功後分享給對方，讓你們能直接聯繫，不公開</div>
         </div>
@@ -1632,7 +1632,7 @@
   // 頁面載入時執行
   loadConfig();
 
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbwVYuPfqQ7guc5pY2vLKAF4yC0R2CWJB4XpSqtRL3JDiAPWUu-jeOw-H0mlMUGgPbyf/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbzKHXznhHwSPUpvuSpJvsBBj7_m4t0pgO_4HfWe_jXwHKWAFiJvRmIOTX1w0QwYPOs/exec";
   const LIFF_ID = "2008649114-wxWy3jJs";
 
   // 常數定義完後才初始化
@@ -2058,6 +2058,14 @@
 
   // ── 送出登記 ──
   async function submitRegister() {
+    const lineIdVal = document.getElementById("reg-lineid")?.value.trim() || "";
+    if (!lineIdVal) {
+      const el = document.getElementById("reg-lineid");
+      el.style.borderColor = "#e03e3e";
+      el.placeholder = "請填入你的 LINE ID，配對成功後才能聯繫對方";
+      el.focus();
+      return;
+    }
     const btn = document.querySelector('#reg-step3 .btn-primary');
     btn.textContent = "送出中..."; btn.disabled = true;
     const personalityTags   = [...document.querySelectorAll('#tags-personality .tag-chip.selected')].map(el=>el.textContent);
