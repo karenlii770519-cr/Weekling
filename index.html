@@ -947,36 +947,12 @@
         </div>
         <div class="form-group">
           <label class="form-label">居住地區<span>*</span></label>
-          <select class="form-select" id="reg-area">
-            <option value="">請選擇地區</option>
-            <optgroup label="新北市">
-              <option>林口區</option>
-              <option>泰山區</option>
-              <option>新莊區</option>
-              <option>五股區</option>
-              <option>八里區</option>
-              <option>淡水區</option>
-              <option>三重區</option>
-              <option>蘆洲區</option>
-              <option>板橋區</option>
-              <option>土城區</option>
-              <option>樹林區</option>
-              <option>鶯歌區</option>
-              <option>三峽區</option>
-            </optgroup>
-            <optgroup label="桃園市">
-              <option>桃園區</option>
-              <option>中壢區</option>
-              <option>平鎮區</option>
-              <option>八德區</option>
-              <option>龜山區</option>
-              <option>蘆竹區</option>
-              <option>大園區</option>
-              <option>觀音區</option>
-              <option>新屋區</option>
-              <option>楊梅區</option>
-            </optgroup>
-          </select>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <select class="form-select" id="reg-city" aria-label="居住縣市"></select>
+            <select class="form-select" id="reg-area" aria-label="居住行政區">
+              <option value="">請先選擇縣市</option>
+            </select>
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label">小孩姓名<span>*</span></label>
@@ -1461,44 +1437,22 @@
         <label class="form-label">場所名稱<span>*</span></label>
         <input class="form-input" id="venue-name" placeholder="例：林口森林公園" />
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div class="form-group">
-          <label class="form-label">類型<span>*</span></label>
-          <select class="form-select" id="venue-type">
-            <option>親子餐廳</option>
-            <option>室內遊樂</option>
-            <option>戶外公園</option>
-            <option>圖書館</option>
-            <option>其他</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">地區<span>*</span></label>
-          <select class="form-select" id="venue-area">
-            <option value="">請選擇地區</option>
-            <option>林口區</option>
-            <option>泰山區</option>
-            <option>新莊區</option>
-            <option>五股區</option>
-            <option>八里區</option>
-            <option>淡水區</option>
-            <option>三重區</option>
-            <option>蘆洲區</option>
-            <option>板橋區</option>
-            <option>土城區</option>
-            <option>樹林區</option>
-            <option>鶯歌區</option>
-            <option>三峽區</option>
-            <option>桃園區</option>
-            <option>中壢區</option>
-            <option>平鎮區</option>
-            <option>八德區</option>
-            <option>龜山區</option>
-            <option>蘆竹區</option>
-            <option>大園區</option>
-            <option>觀音區</option>
-            <option>新屋區</option>
-            <option>楊梅區</option>
+      <div class="form-group">
+        <label class="form-label">類型<span>*</span></label>
+        <select class="form-select" id="venue-type">
+          <option>親子餐廳</option>
+          <option>室內遊樂</option>
+          <option>戶外公園</option>
+          <option>圖書館</option>
+          <option>其他</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">地區<span>*</span></label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <select class="form-select" id="venue-city" aria-label="場所縣市"></select>
+          <select class="form-select" id="venue-area" aria-label="場所行政區">
+            <option value="">請先選擇縣市</option>
           </select>
         </div>
       </div>
@@ -1560,6 +1514,202 @@
 </div>
 
 <script>
+
+  // 服務範圍：北北桃竹。選項值維持行政區名稱，舊資料（例如「蘆竹區」）才填得回去。
+  var SERVICE_AREAS = [
+    { city: "台北市", districts: ["中正區","大同區","中山區","松山區","大安區","萬華區","信義區","士林區","北投區","內湖區","南港區","文山區"] },
+    { city: "新北市", districts: ["板橋區","三重區","中和區","永和區","新莊區","新店區","土城區","樹林區","鶯歌區","三峽區","淡水區","汐止區","瑞芳區","五股區","泰山區","林口區","蘆洲區","八里區","深坑區","石碇區","坪林區","三芝區","石門區","平溪區","雙溪區","貢寮區","金山區","萬里區","烏來區"] },
+    { city: "桃園市", districts: ["桃園區","中壢區","平鎮區","八德區","楊梅區","蘆竹區","大溪區","龍潭區","龜山區","大園區","觀音區","新屋區","復興區"] },
+    { city: "新竹市", districts: ["東區","北區","香山區"] },
+    { city: "新竹縣", districts: ["竹北市","竹東鎮","新埔鎮","關西鎮","湖口鄉","新豐鄉","芎林鄉","橫山鄉","北埔鄉","寶山鄉","峨眉鄉","尖石鄉","五峰鄉"] }
+  ];
+
+  function cityOfDistrict(district) {
+    var want = String(district || "").trim();
+    if (!want) return "";
+    for (var i = 0; i < SERVICE_AREAS.length; i++) {
+      if (SERVICE_AREAS[i].districts.indexOf(want) !== -1) return SERVICE_AREAS[i].city;
+    }
+    return "";
+  }
+
+  function fillCitySelect(cityId) {
+    var el = document.getElementById(cityId);
+    if (!el || el.dataset.ready === "1") return;
+    el.innerHTML = '<option value="">縣市</option>' + SERVICE_AREAS.map(function (g) {
+      return '<option value="' + g.city + '">' + g.city + '</option>';
+    }).join("");
+    el.dataset.ready = "1";
+  }
+
+  function fillDistrictSelect(areaId, city, selected) {
+    var el = document.getElementById(areaId);
+    if (!el) return;
+    var group = null;
+    for (var i = 0; i < SERVICE_AREAS.length; i++) {
+      if (SERVICE_AREAS[i].city === city) group = SERVICE_AREAS[i];
+    }
+    var options = ['<option value="">' + (group ? "行政區" : "行政區") + '</option>'];
+    if (group) {
+      group.districts.forEach(function (d) {
+        options.push('<option value="' + d + '">' + d + '</option>');
+      });
+    }
+    var want = String(selected || "").trim();
+    if (want && (!group || group.districts.indexOf(want) === -1)) {
+      options.push('<option value="' + want + '">' + want + '</option>');
+    }
+    el.innerHTML = options.join("");
+    if (want) el.value = want;
+  }
+
+  function bindAreaPair(cityId, areaId) {
+    fillCitySelect(cityId);
+    var cityEl = document.getElementById(cityId);
+    var areaEl = document.getElementById(areaId);
+    if (!cityEl || !areaEl || cityEl.dataset.bound === "1") return;
+    cityEl.addEventListener("change", function () {
+      fillDistrictSelect(areaId, cityEl.value, "");
+    });
+    cityEl.dataset.bound = "1";
+  }
+
+  function setAreaPair(cityId, areaId, district) {
+    bindAreaPair(cityId, areaId);
+    var want = String(district || "").trim();
+    var city = cityOfDistrict(want);
+    var cityEl = document.getElementById(cityId);
+    if (cityEl) cityEl.value = city || "";
+    fillDistrictSelect(areaId, city, want);
+  }
+
+  function toDateInput(value) {
+    if (value == null || value === "") return "";
+    var s = String(value).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    var parsed = new Date(s);
+    if (!isNaN(parsed.getTime())) {
+      try {
+        return new Intl.DateTimeFormat("en-CA", {
+          timeZone: "Asia/Taipei",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit"
+        }).format(parsed);
+      } catch (e) {}
+    }
+    var m = s.match(/(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})/);
+    if (!m) return "";
+    return m[1] + "-" + ("0" + m[2]).slice(-2) + "-" + ("0" + m[3]).slice(-2);
+  }
+
+  function splitTagText(value) {
+    if (Array.isArray(value)) return value.map(function (s) { return String(s).trim(); }).filter(Boolean);
+    if (value == null || value === "") return [];
+    return String(value).split(/[、,，\n]/).map(function (s) { return s.trim(); }).filter(Boolean);
+  }
+
+  function profileField(p, keys) {
+    if (!p) return "";
+    for (var i = 0; i < keys.length; i++) {
+      var v = p[keys[i]];
+      if (v != null && v !== "") return v;
+    }
+    return "";
+  }
+
+  function setSelectValue(id, value) {
+    var el = document.getElementById(id);
+    if (!el || value == null || String(value).trim() === "") return;
+    var want = String(value).trim();
+    var found = -1;
+    for (var i = 0; i < el.options.length; i++) {
+      if (el.options[i].value === want || el.options[i].textContent.trim() === want) found = i;
+    }
+    if (found === -1) {
+      var extra = document.createElement("option");
+      extra.value = want;
+      extra.textContent = want;
+      el.appendChild(extra);
+      found = el.options.length - 1;
+    }
+    el.selectedIndex = found;
+    el.value = el.options[found].value;
+  }
+
+  function setFieldValue(id, value) {
+    var el = document.getElementById(id);
+    if (!el || value == null || value === "") return;
+    el.value = value;
+  }
+
+  function collectTags(containerId) {
+    var root = document.getElementById(containerId);
+    if (!root) return [];
+    return Array.prototype.filter.call(root.querySelectorAll(".tag-chip"), function (el) {
+      return el.classList.contains("selected") || el.classList.contains("selected-peach");
+    }).map(function (el) { return el.textContent.trim(); }).filter(Boolean);
+  }
+
+  function applyTagSelection(containerId, value) {
+    var root = document.getElementById(containerId);
+    if (!root) return;
+    var want = {};
+    splitTagText(value).forEach(function (t) { want[t] = true; });
+    var peach = containerId === "tags-liked" || containerId === "tags-disliked";
+    Array.prototype.forEach.call(root.querySelectorAll(".tag-chip"), function (el) {
+      var on = !!want[el.textContent.trim()];
+      el.classList.toggle("selected", on && !peach);
+      el.classList.toggle("selected-peach", on && peach);
+    });
+  }
+
+  function applySavedTags() {
+    var p = window.EXISTING_PROFILE;
+    if (!p) return;
+    applyTagSelection("tags-personality", profileField(p, ["personality", "personalityTags"]));
+    applyTagSelection("tags-emotion", profileField(p, ["emotion", "emotionTags", "emotionTag"]));
+    applyTagSelection("tags-energy", profileField(p, ["energy", "energyTags", "energyTag"]));
+    applyTagSelection("tags-liked", profileField(p, ["likedActivities"]));
+    applyTagSelection("tags-disliked", profileField(p, ["dislikedActivities"]));
+  }
+
+  function fillRegisterForm(p) {
+    if (!p) return;
+    setFieldValue("reg-nickname", p.nickname || window.LINE_NAME || "");
+    setAreaPair("reg-city", "reg-area", p.area || "");
+    setFieldValue("reg-childname", p.childName);
+    setFieldValue("reg-birthday", toDateInput(p.childBirthday));
+    setSelectValue("reg-gender", p.childGender);
+    setFieldValue("reg-kindergarten", p.kindergarten);
+    setSelectValue("reg-zodiac", p.zodiac);
+    setFieldValue("reg-intro", p.parentIntro);
+    setFieldValue("reg-lineid", p.lineId);
+    var slotMap = { satAM: "slot-satAM", satPM: "slot-satPM", sunAM: "slot-sunAM", sunPM: "slot-sunPM" };
+    Object.keys(slotMap).forEach(function (key) {
+      var el = document.getElementById(slotMap[key]);
+      if (el) el.classList.toggle("selected", !!p[key]);
+    });
+    applySavedTags();
+    var pauseLabel = document.getElementById("pause-label");
+    if (pauseLabel && p.status) pauseLabel.textContent = p.status === "暫停" ? "恢復配對" : "暫停配對";
+    var titleEl = document.querySelector("#page-register .topbar-title");
+    if (titleEl) titleEl.textContent = "編輯個人資料";
+    var submitBtn = document.querySelector("#reg-step3 .btn-primary");
+    if (submitBtn && !submitBtn.disabled) submitBtn.innerHTML = '儲存更新 <i class="bi bi-check-circle-fill"></i>';
+  }
+
+  function postToGas(payload) {
+    return fetch(GAS_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+  }
+
+  bindAreaPair("reg-city", "reg-area");
+  bindAreaPair("venue-city", "venue-area");
 
   // 渲染標籤的通用函式（全域，確保所有情況都能呼叫）
   function renderTags(containerId, tagList, clickFn, placeholder) {
@@ -1642,8 +1792,8 @@
       // 載入失敗時用預設值
       loadDefaultTags();
     }
-    // 預填標籤（若 profile 已載入）
-    if (window.PREFILL_TAGS) { window.PREFILL_TAGS(); window.PREFILL_TAGS = null; }
+    // 標籤是後來才畫上去的，畫完再把已存的個性勾回來
+    applySavedTags();
   }
 
   function loadDefaultTags() {
@@ -1707,93 +1857,69 @@
     window.LINE_NAME = name;
     window.LINE_AVATAR = avatar;
 
-    document.getElementById("home-name").textContent = name;
-    document.getElementById("home-avatar").src = avatar;
-    document.getElementById("reg-nickname").value = name;
-
+    const homeName = document.getElementById("home-name");
+    if (homeName && name) homeName.textContent = name;
+    const homeAvatar = document.getElementById("home-avatar");
+    if (homeAvatar && avatar) homeAvatar.src = avatar;
     const meAvatar = document.getElementById("profile-avatar");
+    if (meAvatar && avatar) meAvatar.src = avatar;
+    const nick = document.getElementById("reg-nickname");
+    if (nick && !nick.value && name) nick.value = name;
     const meName = document.getElementById("profile-name");
-    if (meAvatar) meAvatar.src = avatar;
-    if (meName) meName.textContent = name;
+    if (meName && name && !(window.EXISTING_PROFILE && window.EXISTING_PROFILE.nickname)) meName.textContent = name;
 
-    // 先從快取立刻帶入，再背景更新
-    const cached = localStorage.getItem("profile_" + uid);
-    if (cached) {
+    if (!window.EXISTING_PROFILE && uid) {
       try {
-        const p = JSON.parse(cached);
-        window.EXISTING_PROFILE = p;
-        applyProfileToUI(p);
-      } catch(e) {}
+        const cached = localStorage.getItem("profile_" + uid);
+        if (cached) {
+          window.EXISTING_PROFILE = JSON.parse(cached);
+          applyProfileToUI(window.EXISTING_PROFILE);
+        }
+      } catch (e) {}
     }
 
     loadUserProfile(uid);
-  };
+  }
 
   function applyProfileToUI(p) {
-    const age = p.childBirthday ? Math.floor((new Date() - new Date(p.childBirthday)) / (1000*60*60*24*365.25)) : "";
+    if (!p) return;
+    const bday = toDateInput(p.childBirthday);
+    let age = "";
+    if (bday) {
+      const born = new Date(bday + "T00:00:00+08:00");
+      age = Math.floor((Date.now() - born.getTime()) / (1000 * 60 * 60 * 24 * 365.25));
+      if (age < 0 || age > 30) age = "";
+    }
     window.MY_CHILD_NAME = p.childName || "";
-    window.MY_CHILD_AGE = age || "";
-    const sub = [p.childName, age ? age+"歲" : "", p.area].filter(Boolean).join("・");
+    window.MY_CHILD_AGE = age === "" ? "" : age;
+    const sub = [p.childName, age !== "" ? age + "歲" : "", p.area].filter(Boolean).join("・");
     const homeSub = document.getElementById("home-sub");
     if (homeSub && sub) homeSub.textContent = sub;
     const profileName = document.getElementById("profile-name");
-    if (profileName) profileName.textContent = p.nickname || window.LINE_NAME;
+    if (profileName) profileName.textContent = p.nickname || window.LINE_NAME || "";
     const profileSub = document.getElementById("profile-sub");
-    if (profileSub) profileSub.textContent = [p.childName, age ? age+"歲" : p.childGender, p.area].filter(Boolean).join("・");
-    const setVal = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
-    setVal("reg-nickname",    p.nickname || window.LINE_NAME);
-    setVal("reg-area",        p.area);
-    setVal("reg-childname",   p.childName);
-    setVal("reg-birthday",    p.childBirthday ? p.childBirthday.split("T")[0] : "");
-    setVal("reg-gender",      p.childGender);
-    setVal("reg-kindergarten",p.kindergarten);
-    setVal("reg-zodiac",      p.zodiac);
-    setVal("reg-intro",       p.parentIntro);
-    setVal("reg-lineid",      p.lineId);
-    const slotMap = { satAM:"slot-satAM", satPM:"slot-satPM", sunAM:"slot-sunAM", sunPM:"slot-sunPM" };
-    Object.entries(slotMap).forEach(([key, id]) => {
-      const el = document.getElementById(id);
-      if (el) el.classList.toggle("selected", !!p[key]);
-    });
+    if (profileSub) profileSub.textContent = [p.childName, age !== "" ? age + "歲" : p.childGender, p.area].filter(Boolean).join("・");
+    fillRegisterForm(p);
+    try { localStorage.setItem("profile_" + (window.LINE_UID || ""), JSON.stringify(p)); } catch (e) {}
   }
 
   async function loadUserProfile(uid) {
     try {
-      const res = await fetch(GAS_URL + "?action=getProfile&lineUid=" + uid);
+      const res = await fetch(GAS_URL + "?action=getProfile&lineUid=" + encodeURIComponent(uid));
       const data = await res.json();
       if (data.success && data.profile) {
-        const p = data.profile;
-        // 存入快取供下次立刻使用
-        try { localStorage.setItem("profile_" + uid, JSON.stringify(p)); } catch(e) {}
-        window.EXISTING_PROFILE = p;
-        applyProfileToUI(p);
-        // 標籤預選：等 loadConfig 建完 chip 後執行
-        window.PREFILL_TAGS = () => {
-          const applyChips = (field, selector) => {
-            if (!p[field]) return;
-            p[field].split("、").forEach(tag => {
-              document.querySelectorAll(selector + " .tag-chip").forEach(el => {
-                if (el.textContent.trim() === tag) el.classList.add("selected");
-              });
-            });
-          };
-          applyChips("personality",        "#tags-personality");
-          applyChips("emotion",            "#tags-emotion");
-          applyChips("energy",             "#tags-energy");
-          applyChips("likedActivities",    "#tags-liked");
-          applyChips("dislikedActivities", "#tags-disliked");
-        };
-        if (document.querySelectorAll("#tags-personality .tag-chip").length > 0) {
-          window.PREFILL_TAGS(); window.PREFILL_TAGS = null;
-        }
+        window.EXISTING_PROFILE = data.profile;
+        applyProfileToUI(data.profile);
         loadPendingMatches(uid);
-      } else {
+      } else if (!window.EXISTING_PROFILE) {
         const homeSub = document.getElementById("home-sub");
         if (homeSub) homeSub.textContent = "點下方完成登記 ↓";
       }
-    } catch(e) {
-      const homeSub = document.getElementById("home-sub");
-      if (homeSub) homeSub.textContent = "";
+    } catch (e) {
+      if (!window.EXISTING_PROFILE) {
+        const homeSub = document.getElementById("home-sub");
+        if (homeSub) homeSub.textContent = "";
+      }
     }
   }
 
@@ -1813,7 +1939,6 @@
   }
 
   async function prefillRegisterForm() {
-    // 等 profile 或 UID 其中一個就緒，最多等 2.5 秒，每 80ms 檢查一次
     if (!window.EXISTING_PROFILE && !window.LINE_UID) {
       await new Promise(resolve => {
         let waited = 0;
@@ -1826,61 +1951,22 @@
       });
     }
     let p = window.EXISTING_PROFILE;
-    // profile 還沒載入但 UID 已就緒，才去 fetch
     if (!p && window.LINE_UID) {
       try {
-        const res = await fetch(GAS_URL + "?action=getProfile&lineUid=" + window.LINE_UID);
+        const res = await fetch(GAS_URL + "?action=getProfile&lineUid=" + encodeURIComponent(window.LINE_UID));
         const data = await res.json();
         if (data.success && data.profile) {
           p = data.profile;
           window.EXISTING_PROFILE = p;
         }
-      } catch(e) {}
+      } catch (e) {}
     }
     if (!p) return;
-    const setVal = (id, val) => { const el = document.getElementById(id); if (el && val != null && val !== '') el.value = val; };
-    setVal('reg-nickname',    p.nickname || window.LINE_NAME);
-    setVal('reg-area',        p.area);
-    setVal('reg-childname',   p.childName);
-    setVal('reg-birthday',    p.childBirthday ? p.childBirthday.split('T')[0] : '');
-    setVal('reg-gender',      p.childGender);
-    setVal('reg-kindergarten',p.kindergarten);
-    setVal('reg-zodiac',      p.zodiac);
-    setVal('reg-intro',       p.parentIntro);
-    setVal('reg-lineid',      p.lineId);
-    // 時段
-    const slotMap = { satAM: 'slot-satAM', satPM: 'slot-satPM', sunAM: 'slot-sunAM', sunPM: 'slot-sunPM' };
-    Object.entries(slotMap).forEach(([key, id]) => {
-      const el = document.getElementById(id);
-      if (el) el.classList.toggle('selected', !!p[key]);
-    });
-    // 標籤
-    const applyTags = (profileField, selector, cls) => {
-      if (!p[profileField]) return;
-      p[profileField].split('、').forEach(tag => {
-        document.querySelectorAll(selector + ' .tag-chip').forEach(el => {
-          if (el.textContent.trim() === tag) el.classList.add(cls);
-        });
-      });
-    };
-    // 若 chips 已渲染就直接套，否則掛上 PREFILL_TAGS 等 loadConfig 完成後補
-    const doApplyTags = () => {
-      applyTags('personality',        '#tags-personality', 'selected');
-      applyTags('emotion',            '#tags-emotion',     'selected');
-      applyTags('energy',             '#tags-energy',      'selected');
-      applyTags('likedActivities',    '#tags-liked',       'selected');
-      applyTags('dislikedActivities', '#tags-disliked',    'selected');
-    };
-    if (document.querySelectorAll('#tags-personality .tag-chip').length > 0) {
-      doApplyTags();
-    } else {
-      window.PREFILL_TAGS = doApplyTags;
-    }
-    // 標題改為「編輯資料」
-    const titleEl = document.querySelector('#page-register .topbar-title');
-    if (titleEl) titleEl.textContent = '編輯個人資料';
-    const submitBtn = document.querySelector('#reg-step3 .btn-primary');
-    if (submitBtn) submitBtn.innerHTML = '儲存更新 <i class="bi bi-check-circle-fill"></i>';
+    const paint = () => fillRegisterForm(window.EXISTING_PROFILE || p);
+    paint();
+    // 手機上的下拉選單在頁面剛顯示時，要再設一次才會看得到已選的值
+    requestAnimationFrame(paint);
+    setTimeout(paint, 60);
   }
 
   function toggleTag(el) {
@@ -1910,58 +1996,6 @@
   }
 
 
-  // ── 註冊送出 ──
-  async function submitRegister() {
-    const btn = document.querySelector('#reg-step3 .btn-primary');
-    btn.textContent = "送出中...";
-    btn.disabled = true;
-
-    // 收集個性標籤
-    const personalityTags = [...document.querySelectorAll('#tags-personality .tag-chip.selected')].map(el => el.textContent);
-    // 收集活動標籤
-    const likedActivities = [...document.querySelectorAll('#tags-liked .tag-chip.selected')].map(el => el.textContent);
-    // 收集場所
-    const preferVenues = [...document.querySelectorAll('#venue-list .venue-option.selected')].map(el => el.dataset.id).join(",");
-
-    const data = {
-      lineUid:         window.LINE_UID || "U_MOCK_001",
-      nickname:        document.getElementById("reg-nickname")?.value || window.LINE_NAME || "",
-      phone:           "",
-      area:            document.getElementById("reg-area")?.value || "",
-      childName:       document.getElementById("reg-childname")?.value || "",
-      childBirthday:   document.getElementById("reg-birthday")?.value || "",
-      childGender:     document.getElementById("reg-gender")?.value || "",
-      kindergarten:    document.getElementById("reg-kindergarten")?.value || "",
-      zodiac:          document.getElementById("reg-zodiac")?.value || "",
-      personalityTags: personalityTags,
-      emotionTag:      "",
-      energyTag:       "",
-      likedActivities: likedActivities,
-      dislikedActivities: [],
-      parentIntro:     document.getElementById("reg-intro")?.value || "",
-      preferVenues:    preferVenues,
-      satAM: document.getElementById("slot-satAM")?.classList.contains("selected"),
-      satPM: document.getElementById("slot-satPM")?.classList.contains("selected"),
-      sunAM: document.getElementById("slot-sunAM")?.classList.contains("selected"),
-      sunPM: document.getElementById("slot-sunPM")?.classList.contains("selected"),
-    };
-
-    try {
-      await fetch(GAS_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "register", data: data })
-      });
-      // no-cors 無法讀取回傳值，直接跳頁
-      goTo("page-home");
-    } catch(e) {
-      alert("網路錯誤：" + e);
-      btn.textContent = "完成註冊";
-      btn.disabled = false;
-    }
-  }
-
   function regNext(step) {
     document.getElementById('reg-step1').style.display = 'none';
     document.getElementById('reg-step2').style.display = 'none';
@@ -1976,37 +2010,9 @@
   }
 
 
-  // ── LIFF ──
-  async function initLiff() {
-    try {
-      await liff.init({ liffId: LIFF_ID });
-      if (liff.isLoggedIn()) {
-        const profile = await liff.getProfile();
-        applyLineProfile(profile.displayName, profile.pictureUrl, profile.userId);
-        // 若 URL 帶有 matchId（被邀請方從 LINE 通知點進來）
-        const params = new URLSearchParams(window.location.search);
-        const matchId = params.get('matchId');
-        if (matchId) loadIncomingMatch(matchId);
-      } else { liff.login(); }
-    } catch(err) { console.error("LIFF error", err); }
-  }
-  initLiff();
-
-  function applyLineProfile(name, avatar, uid) {
-    window.LINE_UID = uid; window.LINE_NAME = name; window.LINE_AVATAR = avatar;
-    document.getElementById("home-name").textContent = name;
-    document.getElementById("home-avatar").src = avatar;
-    document.getElementById("reg-nickname").value = name;
-    const meAvatar = document.getElementById("profile-avatar");
-    const meName = document.getElementById("profile-name");
-    if (meAvatar) meAvatar.src = avatar;
-    if (meName) meName.textContent = name;
-    loadUserProfile(uid);
-  }
-
   async function loadPendingMatches(uid) {
     try {
-      const res = await fetch(GAS_URL + "?action=getMyMatches&lineUid=" + uid);
+      const res = await fetch(GAS_URL + "?action=getMyMatches&lineUid=" + encodeURIComponent(uid));
       const data = await res.json();
       if (!data.success) return;
       const pending = data.matches.filter(m => m.status === "等待確認" && !m.isSender);
@@ -2074,39 +2080,78 @@
       el.focus();
       return;
     }
+    const areaVal = document.getElementById("reg-area")?.value.trim() || "";
+    if (!areaVal) {
+      alert("請選擇居住縣市和行政區");
+      const cityEl = document.getElementById("reg-city");
+      if (cityEl) cityEl.focus();
+      regNext(1);
+      return;
+    }
     const btn = document.querySelector('#reg-step3 .btn-primary');
+    const btnLabel = window.EXISTING_PROFILE ? '儲存更新' : '完成註冊';
     btn.textContent = "送出中..."; btn.disabled = true;
-    const personalityTags   = [...document.querySelectorAll('#tags-personality .tag-chip.selected')].map(el=>el.textContent);
-    const emotionTags       = [...document.querySelectorAll('#tags-emotion .tag-chip.selected')].map(el=>el.textContent);
-    const energyTags        = [...document.querySelectorAll('#tags-energy .tag-chip.selected')].map(el=>el.textContent);
-    const likedActivities   = [...document.querySelectorAll('#tags-liked .tag-chip.selected')].map(el=>el.textContent);
-    const dislikedActivities= [...document.querySelectorAll('#tags-disliked .tag-chip.selected')].map(el=>el.textContent);
+    const personalityTags = collectTags("tags-personality");
+    const emotionTags = collectTags("tags-emotion");
+    const energyTags = collectTags("tags-energy");
+    const likedActivities = collectTags("tags-liked");
+    const dislikedActivities = collectTags("tags-disliked");
     const preferVenues = [...document.querySelectorAll('#venue-list .venue-option.selected')].map(el=>el.dataset.id).join(",");
     const data = {
-      lineUid: window.LINE_UID||"U_MOCK_001",
-      nickname: document.getElementById("reg-nickname")?.value||"",
+      lineUid: window.LINE_UID || "U_MOCK_001",
+      nickname: document.getElementById("reg-nickname")?.value || "",
       phone: "",
-      area: document.getElementById("reg-area")?.value||"",
-      childName: document.getElementById("reg-childname")?.value||"",
-      childBirthday: document.getElementById("reg-birthday")?.value||"",
-      childGender: document.getElementById("reg-gender")?.value||"",
-      kindergarten: document.getElementById("reg-kindergarten")?.value||"",
-      zodiac: document.getElementById("reg-zodiac")?.value||"",
-      personalityTags, emotionTags, energyTags, likedActivities, dislikedActivities,
-      parentIntro: document.getElementById("reg-intro")?.value||"",
-      lineId: document.getElementById("reg-lineid")?.value.trim()||"",
-      preferVenues,
+      area: areaVal,
+      childName: document.getElementById("reg-childname")?.value || "",
+      childBirthday: document.getElementById("reg-birthday")?.value || "",
+      childGender: document.getElementById("reg-gender")?.value || "",
+      kindergarten: document.getElementById("reg-kindergarten")?.value || "",
+      zodiac: document.getElementById("reg-zodiac")?.value || "",
+      personalityTags: personalityTags,
+      emotionTags: emotionTags,
+      energyTags: energyTags,
+      likedActivities: likedActivities,
+      dislikedActivities: dislikedActivities,
+      personality: personalityTags.join("、"),
+      emotionTag: emotionTags.join("、"),
+      energyTag: energyTags.join("、"),
+      parentIntro: document.getElementById("reg-intro")?.value || "",
+      lineId: lineIdVal,
+      preferVenues: preferVenues,
       satAM: document.getElementById("slot-satAM")?.classList.contains("selected"),
       satPM: document.getElementById("slot-satPM")?.classList.contains("selected"),
       sunAM: document.getElementById("slot-sunAM")?.classList.contains("selected"),
       sunPM: document.getElementById("slot-sunPM")?.classList.contains("selected"),
     };
+    window.EXISTING_PROFILE = Object.assign({}, window.EXISTING_PROFILE || {}, {
+      nickname: data.nickname,
+      area: data.area,
+      childName: data.childName,
+      childBirthday: data.childBirthday,
+      childGender: data.childGender,
+      kindergarten: data.kindergarten,
+      zodiac: data.zodiac,
+      personality: data.personality,
+      emotion: data.emotionTag,
+      energy: data.energyTag,
+      likedActivities: likedActivities.join("、"),
+      dislikedActivities: dislikedActivities.join("、"),
+      parentIntro: data.parentIntro,
+      lineId: data.lineId,
+      satAM: data.satAM,
+      satPM: data.satPM,
+      sunAM: data.sunAM,
+      sunPM: data.sunPM,
+      status: (window.EXISTING_PROFILE && window.EXISTING_PROFILE.status) || "啟用"
+    });
     try {
-      await fetch(GAS_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"application/json"}, body:JSON.stringify({action:"register",data}) });
+      await postToGas({ action: "register", data: data });
+      applyProfileToUI(window.EXISTING_PROFILE);
       goTo("page-home");
     } catch(e) {
-      alert("網路錯誤："+e);
-      btn.textContent = "完成登記"; btn.disabled = false;
+      alert("網路錯誤：" + e);
+      btn.textContent = btnLabel;
+      btn.disabled = false;
     }
   }
 
@@ -2152,15 +2197,11 @@
     const slotEl   = document.querySelector('[id^="cslot-"].selected');
     const timeSlot = slotEl ? slotEl.dataset.val : '';
     try {
-      await fetch(GAS_URL, {
-        method: 'POST', mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'createMatch',
-          fromUid: window.LINE_UID,
-          toUid: m.toUid,
-          venueId, date, timeSlot
-        })
+      await postToGas({
+        action: 'createMatch',
+        fromUid: window.LINE_UID,
+        toUid: m.toUid,
+        venueId, date, timeSlot
       });
     } catch(e) {}
     goTo('page-sent');
@@ -2215,11 +2256,7 @@
     btn.textContent = '確認中...';
     btn.disabled = true;
     try {
-      await fetch(GAS_URL, {
-        method: 'POST', mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'confirmMatch', matchId: m.matchId, lineUid: window.LINE_UID })
-      });
+      await postToGas({ action: 'confirmMatch', matchId: m.matchId, lineUid: window.LINE_UID });
     } catch(e) {}
     populateSuccessPage(m);
     goTo('page-success');
@@ -2309,25 +2346,22 @@
   async function submitVenueRequest() {
     const name = document.getElementById('venue-name')?.value.trim();
     const reason = document.getElementById('venue-reason')?.value.trim();
-    if (!name || !reason) { alert('請填寫場所名稱和推薦理由'); return; }
+    const area = document.getElementById('venue-area')?.value.trim() || '';
+    if (!name || !reason || !area) { alert('請填寫場所名稱、地區和推薦理由'); return; }
     const btn = document.getElementById('venue-submit-btn');
     btn.textContent = '送出中...'; btn.disabled = true;
     try {
-      await fetch(GAS_URL, {
-        method: 'POST', mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'submitVenue',
-          data: {
-            lineUid: window.LINE_UID || '',
-            venueName: name,
-            type: document.getElementById('venue-type')?.value || '',
-            area: document.getElementById('venue-area')?.value || '',
-            address: document.getElementById('venue-address')?.value || '',
-            ageRange: document.getElementById('venue-age')?.value || '',
-            reason: reason
-          }
-        })
+      await postToGas({
+        action: 'submitVenue',
+        data: {
+          lineUid: window.LINE_UID || '',
+          venueName: name,
+          type: document.getElementById('venue-type')?.value || '',
+          area: area,
+          address: document.getElementById('venue-address')?.value || '',
+          ageRange: document.getElementById('venue-age')?.value || '',
+          reason: reason
+        }
       });
       alert('申請已送出！審核通過後會出現在場所清單 🎉');
       goTo('page-home');
@@ -2355,16 +2389,12 @@
     const btn = document.getElementById('faq-submit-btn');
     btn.textContent = '送出中...'; btn.disabled = true;
     try {
-      await fetch(GAS_URL, {
-        method: 'POST', mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'submitFeedback',
-          lineUid: window.LINE_UID || '',
-          nickname: window.LINE_NAME || '',
-          feedback: text,
-          contact: document.getElementById('faq-contact')?.value || ''
-        })
+      await postToGas({
+        action: 'submitFeedback',
+        lineUid: window.LINE_UID || '',
+        nickname: window.LINE_NAME || '',
+        feedback: text,
+        contact: document.getElementById('faq-contact')?.value || ''
       });
       alert('謝謝你的回饋！我們會認真看 🙏');
       document.getElementById('faq-feedback').value = '';
@@ -2382,11 +2412,8 @@
     const isPaused = label.textContent === '恢復配對';
     const newStatus = isPaused ? '啟用' : '暫停';
     try {
-      await fetch(GAS_URL, {
-        method: "POST", mode: "no-cors",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ action: "updateStatus", lineUid: window.LINE_UID, status: newStatus })
-      });
+      await postToGas({ action: "updateStatus", lineUid: window.LINE_UID, status: newStatus });
+      if (window.EXISTING_PROFILE) window.EXISTING_PROFILE.status = newStatus;
       label.textContent = isPaused ? '暫停配對' : '恢復配對';
       alert(isPaused ? '配對已恢復！' : '配對已暫停，不會出現在搜尋結果中。');
     } catch(e) { alert('操作失敗，請稍後再試'); }
